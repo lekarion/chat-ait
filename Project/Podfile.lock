@@ -37,7 +37,7 @@ EXTERNAL SOURCES:
     :path: "../../chat-like-ui"
 
 SPEC CHECKSUMS:
-  ChatLikeUI-iOS: 4a280f5bf09aa1279c23fcee4511d04d7d805e8b
+  ChatLikeUI-iOS: 946cec2cfe52f293dc5f79fa84241db54b782988
   CocoaLumberjack: 5c7e64cdb877770859bddec4d3d5a0d7c9299df9
   DL8BallAssistant: fb0bd96aecc7ceb769acd9f59205498a6edd92d7
   DLAssistingSDK: c8fcb96d4b949193ddcd4bcf8106e2ef73bfaa6c
