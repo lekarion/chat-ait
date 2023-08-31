@@ -1,0 +1,14 @@
+#
+#   project.yml
+#   ChatAIT
+#
+
+include:
+    - path: "targets.yml"
+      relativePaths: false
+    
+fileGroups:
+    - targets.yml
+    - project.yml
+    - Configurations
+ 

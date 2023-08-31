@@ -1,0 +1,55 @@
+#
+#   targets.yml
+#   ChatAIT
+#
+
+name: ChatAIT
+options:
+  bundleIdPrefix: com.olegyaros.chatait
+  deploymentTarget:
+    iOS: 14.0
+  settingPresets: none
+
+configs:
+  Debug: none
+  Release: none
+
+configFiles:
+  Debug: Configurations/Debug.xcconfig
+  Release: Configurations/Release.xcconfig
+
+# templates
+targetTemplates:
+  CommonTarget:
+    type: application
+    platform: iOS
+    productName: ${target_name}
+    settings:
+      MARKETING_VERSION: 0.1.0
+    sources:
+      - "${target_name}"
+
+schemeTemplates:
+  CommonScheme:
+    build:
+      targets:
+        ${scheme_name}: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Release
+    archive:
+      config: Release
+
+# targets & schemes
+targets:
+  ChatAIT: 
+    templates: [CommonTarget]
+
+schemes:
+  ChatAIT: 
+    templates: [CommonScheme]

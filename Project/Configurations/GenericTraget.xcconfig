@@ -1,0 +1,15 @@
+//
+//  GenericTraget.xcconfig
+//  Common
+//
+//  Created by developer on 15.05.2021.
+//  Copyright © 2021 Oleg Yaros. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+PRODUCT_NAME = $(TARGET_NAME)
+PRODUCT_BUNDLE_IDENTIFIER = com.olegyaros.$(PRODUCT_NAME)
+
+INFOPLIST_KEY_NSHumanReadableCopyright = Copyright © 2018-2022 Oleg Yaros. All rights reserved.
