@@ -1,6 +1,6 @@
 //
 //  Debug.xcconfig
-//  Common
+//  ChatAIT
 //
 //  Created by developer on 2/7/19.
 //  Copyright © 2019 Oleg Yaros. All rights reserved.
@@ -11,6 +11,7 @@
 
 #include "General.xcconfig"
 #include "GenericTraget.xcconfig"
+#include "Version.xcconfig"
 
 SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG
 
