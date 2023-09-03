@@ -5,6 +5,7 @@
 //  Created by developer on 03.09.2023.
 //
 
+import Combine
 import ChatLikeUI_iOS
 import UIKit
 
@@ -17,8 +18,14 @@ protocol AppCoordinatorInterface: AnyObject {
 }
 
 class AppCoordinator {
+    init() {
+        chatModel.event.receive(on: DispatchQueue.main).sink { [weak self] event in
+            guard let self = self else { return }
+        }.store(in: &bag)
+    }
+
     func start() {
-        chatModel.start(with: chatUICoordinator)
+        chatModel.start()
     }
 
     func stop() {
@@ -27,6 +34,7 @@ class AppCoordinator {
 
     private let chatUICoordinator = ChatLikeCoordinator()
     private let chatModel = ChatModel()
+    private var bag = Set<AnyCancellable>()
 }
 
 extension AppCoordinator: AppCoordinatorInterface {

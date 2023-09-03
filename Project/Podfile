@@ -10,6 +10,7 @@ target 'ChatAIT' do
 
 #  pod 'ChatLikeUI-iOS'
    pod 'ChatLikeUI-iOS', { :path => '../../chat-like-ui' } # Uncomment to use dev pod
+   pod 'DecouplingLabSDK'
    pod 'DL8BallAssistant'
    pod 'DLDragonAssistant'
 end
