@@ -26,14 +26,6 @@ class AppCoordinator {
         chatUICoordinator.setup(with: ChatLikeConfiguration.Builder().build())
     }
 
-    func start() {
-        chatModel.start()
-    }
-
-    func stop() {
-        chatModel.stop()
-    }
-
     private let chatUICoordinator = ChatLikeCoordinator()
     private let chatModel = ChatModel()
     private var bag = Set<AnyCancellable>()
@@ -44,6 +36,8 @@ extension AppCoordinator: AppCoordinatorInterface {
         guard let viewController = chatUICoordinator.viewController else {
             fatalError("Cannot start main interface module")
         }
+
         installer.install(viewController: viewController)
+        chatModel.start()
     }
 }

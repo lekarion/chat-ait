@@ -5,6 +5,7 @@
 //  Created by developer on 04.09.2023.
 //
 
+import CocoaLumberjack
 import Combine
 import DecouplingLabSDK
 
@@ -46,6 +47,7 @@ extension ChatModel {
 
         DecouplingLab.allAssistantIdentifiers.forEach { identifier in
             DecouplingLab.enableAssistant(for: identifier, true)
+            DDLogVerbose("\(Self.logPrefix) assistant with identifier '\(identifier)' is enabled")
         }
 
         state = .idle
@@ -57,4 +59,8 @@ extension ChatModel {
         DecouplingLab.stop()
         state = .off
     }
+}
+
+extension ChatModel {
+    static let logPrefix = "ChatModel:"
 }
