@@ -13,10 +13,21 @@ class ViewController: UIViewController {
 
         UIApplication.shared.appCoordinator.installUI(with: self)
     }
+
+    // MARK: ### Private ###
+    @IBOutlet private weak var contentView: UIStackView!
 }
 
 extension ViewController: InterfaceInstaller {
     func install(viewController: UIViewController) {
-        // TODO: implement
+        guard nil == viewController.parent else { return }
+
+        children.forEach {
+            $0.removeFromParent()
+            $0.view.removeFromSuperview()
+        }
+
+        contentView.addSubview(viewController.view)
+        addChild(viewController)
     }
 }

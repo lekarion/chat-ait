@@ -22,6 +22,8 @@ class AppCoordinator {
         chatModel.event.receive(on: DispatchQueue.main).sink { [weak self] event in
             guard let self = self else { return }
         }.store(in: &bag)
+
+        chatUICoordinator.setup(with: ChatLikeConfiguration.Builder().build())
     }
 
     func start() {
