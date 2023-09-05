@@ -25,7 +25,7 @@ targetTemplates:
     platform: iOS
     productName: ${target_name}
     settings:
-      MARKETING_VERSION: 0.1.0
+      GENERATE_INFOPLIST_FILE: YES
     sources:
       - "${target_name}"
 

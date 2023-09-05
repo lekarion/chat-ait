@@ -12,4 +12,12 @@
 PRODUCT_NAME = $(TARGET_NAME)
 PRODUCT_BUNDLE_IDENTIFIER = com.olegyaros.$(PRODUCT_NAME)
 
-INFOPLIST_KEY_NSHumanReadableCopyright = Copyright © 2018-2022 Oleg Yaros. All rights reserved.
+ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
+
+INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard
+INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait
+INFOPLIST_KEY_UIMainStoryboardFile = Main
+INFOPLIST_KEY_NSHumanReadableCopyright = Copyright © 2022-2024 Oleg Yaros. All rights reserved.
+
+TARGETED_DEVICE_FAMILY = 1
+SUPPORTED_PLATFORMS = iphoneos iphonesimulator
