@@ -5,7 +5,7 @@
 //  Created by developer on 04.09.2023.
 //
 
-import Foundation
+import UIKit
 
 protocol ChatModelEvent {
     var info: String? { get }
@@ -19,38 +19,38 @@ protocol StateEvent: UpdateEvent {
     var state: ChatModel.State { get }
 }
 
-protocol IndexesUpdateEvent: UpdateEvent {
-    var indexes: [Int] { get }
+protocol ElementEvent: UpdateEvent {
+    var text: String? { get }
+    var image: UIImage? { get }
 }
 
 enum UpdateEventKind {
-    case stateUpdate, elementAdded, elementUpdated
+    case stateUpdate, elementAdded
 }
 
 // MARK: -
 
-class ElementUpdateEvent: IndexesUpdateEvent {
-    let kind: UpdateEventKind
-    let info: String? = nil
-    let indexes: [Int]
-
-    init(add indexes: [Int]) {
-        self.kind = .elementAdded
-        self.indexes = indexes
-    }
-
-    init(update indexes: [Int]) {
-        self.kind = .elementUpdated
-        self.indexes = indexes
-    }
-}
-
 class StateUpdateEvent: StateEvent {
-    init(_ state: ChatModel.State) {
+    init(_ state: ChatModel.State, comment: String? = nil) {
         self.state = state
+        self.info = comment
     }
 
     let kind: UpdateEventKind = .stateUpdate
-    let info: String? = nil
+    let info: String?
     let state: ChatModel.State
+}
+
+class ElementUpdateEvent: ElementEvent {
+    init(add text: String?, image: UIImage?, comment: String? = nil) {
+        self.kind = .elementAdded
+        self.text = text
+        self.image = image
+        self.info = comment
+    }
+
+    let kind: UpdateEventKind
+    let text: String?
+    let image: UIImage?
+    let info: String?
 }
