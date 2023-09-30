@@ -15,9 +15,22 @@ class ChatViewController: UIViewController {
     }
 
     // MARK: ### Private ###
+    private var viewModel: ChatViewModelInterface?
+
     @IBOutlet private weak var contentView: UIStackView!
+    @IBOutlet private weak var settingsButton: UIButton!
+    @IBOutlet private weak var eraseButton: UIButton!
 }
 
+extension ChatViewController { // Actions
+    @IBAction func onShowSettings(_ sender: Any) {
+    }
+
+    @IBAction func onEraseChat(_ sender: Any) {
+    }
+}
+
+// MARK -
 extension ChatViewController: InterfaceInstaller {
     func install(viewController: UIViewController) {
         guard nil == viewController.parent else { return }
@@ -29,5 +42,11 @@ extension ChatViewController: InterfaceInstaller {
 
         contentView.addSubview(viewController.view)
         addChild(viewController)
+    }
+}
+
+extension ChatViewController: ViewModelPropagation {
+    func propagate(viewModel: ChatViewModelInterface) {
+        self.viewModel = viewModel
     }
 }
