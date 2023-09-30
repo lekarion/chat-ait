@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  ChatViewController.swift
 //  ChatAIT
 //
 //  Created by developer on 31.08.2023.
@@ -7,18 +7,18 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ChatViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        UIApplication.shared.appCoordinator.installUI(with: self)
+        UIApplication.shared.appCoordinator.propagateViewController(main: self)
     }
 
     // MARK: ### Private ###
     @IBOutlet private weak var contentView: UIStackView!
 }
 
-extension ViewController: InterfaceInstaller {
+extension ChatViewController: InterfaceInstaller {
     func install(viewController: UIViewController) {
         guard nil == viewController.parent else { return }
 

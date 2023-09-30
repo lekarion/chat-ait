@@ -10,7 +10,10 @@ import Combine
 import DecouplingLabSDK
 import UIKit
 
-class ChatModel {
+protocol ChatViewModelInterface: AnyObject {
+}
+
+class ChatModel: ChatViewModelInterface {
     enum State {
         case off, idle, assisting
     }
