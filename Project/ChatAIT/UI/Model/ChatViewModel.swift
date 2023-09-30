@@ -93,3 +93,32 @@ extension ChatModel {
 extension ChatModel {
     static let logPrefix = "ChatModel:"
 }
+
+//private extension ChatCoordinator {
+//        chatModel.event.receive(on: DispatchQueue.main).sink { [weak self] event in
+//            guard let self = self else { return }
+//
+//            switch event {
+//            case let state as StateEvent:
+//                self.process(state: state)
+//            default:
+//                break
+//            }
+//        }.store(in: &bag)
+//
+//    func process(state event: StateEvent) {
+//        switch event.state {
+//        case .assisting:
+//            if isInitialStart {
+//                chatUICoordinator.push(item: ChatLikeData(text: "Welcome message".localized, image: nil, source: .chat, creatorIcon: chatIcon))
+//                isInitialStart = false
+//            } else {
+//                chatUICoordinator.startThread()
+//            }
+//        case .off:
+//            chatUICoordinator.updateThread(ChatLikeThreadInfo(footer: event.info))
+//        default:
+//            break
+//        }
+//    }
+//}

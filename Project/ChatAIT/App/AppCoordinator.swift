@@ -49,3 +49,7 @@ extension AppCoordinator: AppCoordinatorInterface {
         charCoordinator?.start()
     }
 }
+
+private extension AppCoordinator {
+    static let logPrefix = "AppCoordinator:"
+}
