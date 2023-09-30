@@ -1,5 +1,5 @@
 //
-//  ChatModelEvent.swift
+//  ChatViewModelEvent.swift
 //  ChatAIT
 //
 //  Created by developer on 04.09.2023.
@@ -7,16 +7,16 @@
 
 import UIKit
 
-protocol ChatModelEvent {
+protocol ChatViewModelEvent {
     var info: String? { get }
 }
 
-protocol UpdateEvent: ChatModelEvent {
+protocol UpdateEvent: ChatViewModelEvent {
     var kind: UpdateEventKind { get }
 }
 
 protocol StateEvent: UpdateEvent {
-    var state: ChatModel.State { get }
+    var state: ChatViewModel.State { get }
 }
 
 protocol ElementEvent: UpdateEvent {
@@ -31,14 +31,14 @@ enum UpdateEventKind {
 // MARK: -
 
 class StateUpdateEvent: StateEvent {
-    init(_ state: ChatModel.State, comment: String? = nil) {
+    init(_ state: ChatViewModel.State, comment: String? = nil) {
         self.state = state
         self.info = comment
     }
 
     let kind: UpdateEventKind = .stateUpdate
     let info: String?
-    let state: ChatModel.State
+    let state: ChatViewModel.State
 }
 
 class ElementUpdateEvent: ElementEvent {

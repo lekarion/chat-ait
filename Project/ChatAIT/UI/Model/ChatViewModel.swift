@@ -1,5 +1,5 @@
 //
-//  ChatModel.swift
+//  ChatViewModel.swift
 //  ChatAIT
 //
 //  Created by developer on 04.09.2023.
@@ -12,7 +12,7 @@ import UIKit
 protocol ChatViewModelInterface: AnyObject {
 }
 
-class ChatModel: ChatViewModelInterface {
+class ChatViewModel: ChatViewModelInterface {
     enum State {
         case off, idle, assisting
     }
@@ -23,13 +23,13 @@ class ChatModel: ChatViewModelInterface {
         }
     }
 
-    var event: AnyPublisher<ChatModelEvent, Never> { eventSubject.eraseToAnyPublisher() }
+    var event: AnyPublisher<ChatViewModelEvent, Never> { eventSubject.eraseToAnyPublisher() }
 
     // MARK: ### Private ###
-    private var eventSubject = PassthroughSubject<ChatModelEvent, Never>()
+    private var eventSubject = PassthroughSubject<ChatViewModelEvent, Never>()
 }
 
-extension ChatModel {
+extension ChatViewModel {
     /// Start chat model.
     func start() {
         guard state == .off else { return }
@@ -90,8 +90,8 @@ extension ChatModel {
     }
 }
 
-extension ChatModel {
-    static let logPrefix = "ChatModel:"
+extension ChatViewModel {
+    static let logPrefix = "ChatViewModel:"
 }
 
 //private extension ChatCoordinator {
