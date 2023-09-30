@@ -10,26 +10,39 @@ import Combine
 import UIKit
 
 protocol ChatViewModelInterface: AnyObject {
+    var isChatEmpty: Bool { get }
+    func showSettings()
+    func clearChat()
 }
 
-class ChatViewModel: ChatViewModelInterface {
+class ChatViewModel {
     enum State {
         case off, idle, assisting
     }
 
-    var state: State = .off {
+    enum UpdateReason {
+        case stateChanged(state: State)
+        case conentChanged
+    }
+
+    enum Action {
+        case clearContent
+    }
+
+    private (set) var state: State = .off {
         didSet {
-            eventSubject.send(StateUpdateEvent(state))
+            updateEventSubject.send(.stateChanged(state: state))
         }
     }
 
-    var event: AnyPublisher<ChatViewModelEvent, Never> { eventSubject.eraseToAnyPublisher() }
-
     // MARK: ### Private ###
-    private var eventSubject = PassthroughSubject<ChatViewModelEvent, Never>()
+    private var actionEventSubject = PassthroughSubject<Action, Never>()
+    private var updateEventSubject = PassthroughSubject<UpdateReason, Never>()
 }
 
-extension ChatViewModel {
+extension ChatViewModel { // Coordinator API
+    var actionEvent: AnyPublisher<Action, Never> { actionEventSubject.eraseToAnyPublisher() }
+
     /// Start chat model.
     func start() {
         guard state == .off else { return }
@@ -90,35 +103,19 @@ extension ChatViewModel {
     }
 }
 
-extension ChatViewModel {
-    static let logPrefix = "ChatViewModel:"
+extension ChatViewModel: ChatViewModelInterface { // View controller API
+    var updateEvent: AnyPublisher<UpdateReason, Never> { updateEventSubject.eraseToAnyPublisher() }
+
+    var isChatEmpty: Bool { true }
+
+    func showSettings() {
+    }
+
+    func clearChat() {
+        actionEventSubject.send(.clearContent)
+    }
 }
 
-//private extension ChatCoordinator {
-//        chatModel.event.receive(on: DispatchQueue.main).sink { [weak self] event in
-//            guard let self = self else { return }
-//
-//            switch event {
-//            case let state as StateEvent:
-//                self.process(state: state)
-//            default:
-//                break
-//            }
-//        }.store(in: &bag)
-//
-//    func process(state event: StateEvent) {
-//        switch event.state {
-//        case .assisting:
-//            if isInitialStart {
-//                chatUICoordinator.push(item: ChatLikeData(text: "Welcome message".localized, image: nil, source: .chat, creatorIcon: chatIcon))
-//                isInitialStart = false
-//            } else {
-//                chatUICoordinator.startThread()
-//            }
-//        case .off:
-//            chatUICoordinator.updateThread(ChatLikeThreadInfo(footer: event.info))
-//        default:
-//            break
-//        }
-//    }
-//}
+private extension ChatViewModel {
+    static let logPrefix = "ChatViewModel:"
+}

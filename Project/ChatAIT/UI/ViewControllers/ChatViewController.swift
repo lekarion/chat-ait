@@ -24,9 +24,11 @@ class ChatViewController: UIViewController {
 
 extension ChatViewController { // Actions
     @IBAction func onShowSettings(_ sender: Any) {
+        viewModel?.showSettings()
     }
 
     @IBAction func onEraseChat(_ sender: Any) {
+        viewModel?.clearChat()
     }
 }
 

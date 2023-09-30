@@ -33,6 +33,8 @@ class ChatCoordinator {
 
         chatViewModel.start()
         (viewController as? ViewModelPropagation)?.propagate(viewModel: chatViewModel)
+
+        bindEvents()
     }
 
     func start() {
@@ -51,4 +53,44 @@ class ChatCoordinator {
 
     private var isInitialStart = true
     private lazy var chatIcon = { UIImage(named: "chat-icon") }()
+}
+
+private extension ChatCoordinator {
+    func bindEvents() {
+        chatViewModel.actionEvent.receive(on: DispatchQueue.main).sink { [weak self] action in
+            guard let self = self else { return }
+
+            switch action {
+            case .clearContent:
+                // TODO: clear chat content
+                break
+            }
+        }.store(in: &bag)
+    }
+//        chatModel.event.receive(on: DispatchQueue.main).sink { [weak self] event in
+//            guard let self = self else { return }
+//
+//            switch event {
+//            case let state as StateEvent:
+//                self.process(state: state)
+//            default:
+//                break
+//            }
+//        }.store(in: &bag)
+//
+//    func process(state event: StateEvent) {
+//        switch event.state {
+//        case .assisting:
+//            if isInitialStart {
+//                chatUICoordinator.push(item: ChatLikeData(text: "Welcome message".localized, image: nil, source: .chat, creatorIcon: chatIcon))
+//                isInitialStart = false
+//            } else {
+//                chatUICoordinator.startThread()
+//            }
+//        case .off:
+//            chatUICoordinator.updateThread(ChatLikeThreadInfo(footer: event.info))
+//        default:
+//            break
+//        }
+//    }
 }
