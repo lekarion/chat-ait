@@ -25,7 +25,7 @@ class ChatViewController: UIViewController, ChatViewControllerInterface {
             guard oldValue !== viewModel else { return }
             viewModelCancellable = viewModel?.updateEvent.receive(on: DispatchQueue.main).sink { [weak self] reason in
                 switch reason {
-                case .conentChanged:
+                case .contentChanged:
                     self?.updateUI()
                 default:
                     break

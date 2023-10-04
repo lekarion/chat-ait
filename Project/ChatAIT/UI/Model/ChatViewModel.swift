@@ -15,10 +15,10 @@ class ChatViewModel {
             guard oldValue !== contentProvider else { return }
 
             contentProviderCancellable = contentProvider?.updateEvent.receive(on: DispatchQueue.main).sink { [weak self] in
-                self?.updateEventSubject.send(.conentChanged)
+                self?.updateEventSubject.send(.contentChanged)
             }
 
-            updateEventSubject.send(.conentChanged)
+            updateEventSubject.send(.contentChanged)
         }
     }
 
@@ -43,7 +43,7 @@ extension ChatViewModel {
 
     enum UpdateReason {
         case stateChanged(state: State)
-        case conentChanged
+        case contentChanged
     }
 
     enum Action {

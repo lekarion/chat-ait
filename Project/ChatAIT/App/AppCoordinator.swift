@@ -32,7 +32,6 @@ class AppCoordinator {
         }
     }
 
-
     deinit {
         chatCoordinator?.stop()
         DecouplingLab.stop()
