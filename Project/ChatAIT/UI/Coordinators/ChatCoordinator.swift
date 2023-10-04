@@ -19,7 +19,7 @@ protocol ViewModelPropagation: AnyObject {
 
 class ChatCoordinator {
     init(viewController: UIViewController) {
-        guard let installer = viewController as? InterfaceInstaller else {
+        guard let controller = viewController as? (InterfaceInstaller & ChatViewControllerInterface) else {
             fatalError("Invalid main view controller class")
         }
         self.viewController = viewController
@@ -29,10 +29,11 @@ class ChatCoordinator {
             fatalError("Cannot start main interface module")
         }
 
-        installer.install(viewController: rootViewController)
+        controller.install(viewController: rootViewController)
+        controller.propagate(viewModel: chatViewModel)
+        controller.delegate = self
 
         chatViewModel.start()
-        (viewController as? ViewModelPropagation)?.propagate(viewModel: chatViewModel)
 
         bindEvents()
     }
@@ -51,18 +52,34 @@ class ChatCoordinator {
     private let chatViewModel = ChatViewModel()
     private var bag = Set<AnyCancellable>()
 
+    private let contentUpdateSubject = PassthroughSubject<Void, Never>()
+
     private var isInitialStart = true
     private lazy var chatIcon = { UIImage(named: "chat-icon") }()
 }
 
+extension ChatCoordinator: ChatViewControllerDelegate {
+    func showSettings() {
+        // TODO: implement
+    }
+
+    func clearChat() {
+        chatUICoordinator.erase()
+    }
+}
+
+extension ChatCoordinator: ChatViewModelContentProvider {
+    var isEmpty: Bool { chatUICoordinator.isEmpty }
+    var updateEvent: AnyPublisher<Void, Never> { contentUpdateSubject.eraseToAnyPublisher() }
+}
+
 private extension ChatCoordinator {
     func bindEvents() {
-        chatViewModel.actionEvent.receive(on: DispatchQueue.main).sink { [weak self] action in
-            guard let self = self else { return }
-
-            switch action {
-            case .clearContent:
-                // TODO: clear chat content
+        chatUICoordinator.notificationEvent.receive(on: DispatchQueue.main).sink { [weak self] event in
+            switch event {
+            case .didUpdateContent:
+                self?.contentUpdateSubject.send()
+            default:
                 break
             }
         }.store(in: &bag)

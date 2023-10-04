@@ -7,15 +7,26 @@
 
 import UIKit
 
-class ChatViewController: UIViewController {
+protocol ChatViewControllerDelegate: AnyObject {
+    func showSettings()
+    func clearChat()
+}
+
+protocol ChatViewControllerInterface: ViewModelPropagation {
+    var delegate: ChatViewControllerDelegate? { get set }
+}
+
+class ChatViewController: UIViewController, ChatViewControllerInterface {
     override func viewDidLoad() {
         super.viewDidLoad()
 
         UIApplication.shared.appCoordinator.propagateViewController(main: self)
     }
 
+    weak var delegate: ChatViewControllerDelegate?
+
     // MARK: ### Private ###
-    private var viewModel: ChatViewModelInterface?
+    private weak var viewModel: ChatViewModelInterface?
 
     @IBOutlet private weak var contentView: UIStackView!
     @IBOutlet private weak var settingsButton: UIButton!
@@ -24,11 +35,11 @@ class ChatViewController: UIViewController {
 
 extension ChatViewController { // Actions
     @IBAction func onShowSettings(_ sender: Any) {
-        viewModel?.showSettings()
+        delegate?.showSettings()
     }
 
     @IBAction func onEraseChat(_ sender: Any) {
-        viewModel?.clearChat()
+        delegate?.clearChat()
     }
 }
 
@@ -47,7 +58,7 @@ extension ChatViewController: InterfaceInstaller {
     }
 }
 
-extension ChatViewController: ViewModelPropagation {
+extension ChatViewController { // ViewModelPropagation
     func propagate(viewModel: ChatViewModelInterface) {
         self.viewModel = viewModel
     }

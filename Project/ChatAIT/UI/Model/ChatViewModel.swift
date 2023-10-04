@@ -10,12 +10,41 @@ import Combine
 import UIKit
 
 protocol ChatViewModelInterface: AnyObject {
+    var updateEvent: AnyPublisher<ChatViewModel.UpdateReason, Never> { get }
     var isChatEmpty: Bool { get }
-    func showSettings()
-    func clearChat()
+}
+
+protocol ChatViewModelContentProvider: AnyObject {
+    var updateEvent: AnyPublisher<Void, Never> { get }
+    var isEmpty: Bool { get }
 }
 
 class ChatViewModel {
+    weak var contentProvider: ChatViewModelContentProvider? {
+        didSet {
+            guard oldValue !== contentProvider else { return }
+
+            contentProviderCancellable = contentProvider?.updateEvent.receive(on: DispatchQueue.main).sink { [weak self] in
+                self?.updateEventSubject.send(.conentChanged)
+            }
+
+            updateEventSubject.send(.conentChanged)
+        }
+    }
+
+    private (set) var state: State = .off {
+        didSet {
+            guard oldValue != state else { return }
+            updateEventSubject.send(.stateChanged(state: state))
+        }
+    }
+
+    // MARK: ### Private ###
+    private var updateEventSubject = PassthroughSubject<UpdateReason, Never>()
+    private var contentProviderCancellable: AnyCancellable?
+}
+
+extension ChatViewModel {
     enum State {
         case off, idle, assisting
     }
@@ -26,23 +55,11 @@ class ChatViewModel {
     }
 
     enum Action {
-        case clearContent
+        case clearContent, showSettings
     }
-
-    private (set) var state: State = .off {
-        didSet {
-            updateEventSubject.send(.stateChanged(state: state))
-        }
-    }
-
-    // MARK: ### Private ###
-    private var actionEventSubject = PassthroughSubject<Action, Never>()
-    private var updateEventSubject = PassthroughSubject<UpdateReason, Never>()
 }
 
 extension ChatViewModel { // Coordinator API
-    var actionEvent: AnyPublisher<Action, Never> { actionEventSubject.eraseToAnyPublisher() }
-
     /// Start chat model.
     func start() {
         guard state == .off else { return }
@@ -105,15 +122,7 @@ extension ChatViewModel { // Coordinator API
 
 extension ChatViewModel: ChatViewModelInterface { // View controller API
     var updateEvent: AnyPublisher<UpdateReason, Never> { updateEventSubject.eraseToAnyPublisher() }
-
-    var isChatEmpty: Bool { true }
-
-    func showSettings() {
-    }
-
-    func clearChat() {
-        actionEventSubject.send(.clearContent)
-    }
+    var isChatEmpty: Bool { contentProvider?.isEmpty ?? true }
 }
 
 private extension ChatViewModel {
