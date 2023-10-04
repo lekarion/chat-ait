@@ -5,6 +5,7 @@
 //  Created by developer on 31.08.2023.
 //
 
+import Combine
 import UIKit
 
 protocol ChatViewControllerDelegate: AnyObject {
@@ -21,16 +22,32 @@ class ChatViewController: UIViewController, ChatViewControllerInterface {
         super.viewDidLoad()
 
         UIApplication.shared.appCoordinator.propagateViewController(main: self)
+
+        updateUI()
     }
 
     weak var delegate: ChatViewControllerDelegate?
 
     // MARK: ### Private ###
-    private weak var viewModel: ChatViewModelInterface?
+    private weak var viewModel: ChatViewModelInterface? {
+        didSet {
+            guard oldValue !== viewModel else { return }
+            viewModelCancellable = viewModel?.updateEvent.receive(on: DispatchQueue.main).sink { [weak self] reason in
+                switch reason {
+                case .conentChanged:
+                    self?.updateUI()
+                default:
+                    break
+                }
+            }
+        }
+    }
 
     @IBOutlet private weak var contentView: UIStackView!
     @IBOutlet private weak var settingsButton: UIButton!
     @IBOutlet private weak var eraseButton: UIButton!
+
+    private var viewModelCancellable: AnyCancellable?
 }
 
 extension ChatViewController { // Actions
@@ -61,5 +78,11 @@ extension ChatViewController: InterfaceInstaller {
 extension ChatViewController { // ViewModelPropagation
     func propagate(viewModel: ChatViewModelInterface) {
         self.viewModel = viewModel
+    }
+}
+// MARK: -
+private extension ChatViewController {
+    func updateUI() {
+        eraseButton.isEnabled = viewModel?.isChatEmpty == false
     }
 }
