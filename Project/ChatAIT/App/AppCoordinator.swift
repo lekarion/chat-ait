@@ -34,19 +34,19 @@ class AppCoordinator {
 
 
     deinit {
-        charCoordinator?.stop()
+        chatCoordinator?.stop()
         DecouplingLab.stop()
     }
 
-    private var charCoordinator: ChatCoordinator?
+    private var chatCoordinator: ChatCoordinator?
 }
 
 extension AppCoordinator: AppCoordinatorInterface {
     func propagateViewController(main viewController: UIViewController) {
-        guard nil == charCoordinator else { return }
+        guard nil == chatCoordinator else { return }
 
-        charCoordinator = ChatCoordinator(viewController: viewController)
-        charCoordinator?.start()
+        chatCoordinator = ChatCoordinator(viewController: viewController)
+        chatCoordinator?.start()
     }
 }
 
