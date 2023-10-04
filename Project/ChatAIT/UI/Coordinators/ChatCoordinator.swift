@@ -9,14 +9,6 @@ import Combine
 import ChatLikeUI_iOS
 import UIKit
 
-protocol InterfaceInstaller: AnyObject {
-    func install(viewController: UIViewController)
-}
-
-protocol ViewModelPropagation: AnyObject {
-    func propagate(viewModel: ChatViewModelInterface)
-}
-
 class ChatCoordinator {
     init(viewController: UIViewController) {
         guard let controller = viewController as? (InterfaceInstaller & ChatViewControllerInterface) else {
@@ -29,21 +21,23 @@ class ChatCoordinator {
             fatalError("Cannot start main interface module")
         }
 
+        chatViewModel.contentProvider = self
+
         controller.install(viewController: rootViewController)
         controller.propagate(viewModel: chatViewModel)
         controller.delegate = self
-
-        chatViewModel.start()
 
         bindEvents()
     }
 
     func start() {
+        chatViewModel.start()
         chatViewModel.startConversation()
     }
 
     func stop() {
         chatViewModel.stopConversation()
+        chatViewModel.stop()
     }
 
     // MARK: ### Private ###
@@ -71,6 +65,15 @@ extension ChatCoordinator: ChatViewControllerDelegate {
 extension ChatCoordinator: ChatViewModelContentProvider {
     var isEmpty: Bool { chatUICoordinator.isEmpty }
     var updateEvent: AnyPublisher<Void, Never> { contentUpdateSubject.eraseToAnyPublisher() }
+
+    func send(command: ContentCommand) {
+        switch command {
+        case .showWelcomeMessage:
+            chatUICoordinator.push(item: ChatLikeData(text: "Welcome to the ChatAIT! Please select conversation type from the list below:".localized, image: nil, source: .chat))
+        case .showConversations:
+            break
+        }
+    }
 }
 
 private extension ChatCoordinator {

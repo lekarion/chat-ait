@@ -9,16 +9,6 @@ import CocoaLumberjack
 import Combine
 import UIKit
 
-protocol ChatViewModelInterface: AnyObject {
-    var updateEvent: AnyPublisher<ChatViewModel.UpdateReason, Never> { get }
-    var isChatEmpty: Bool { get }
-}
-
-protocol ChatViewModelContentProvider: AnyObject {
-    var updateEvent: AnyPublisher<Void, Never> { get }
-    var isEmpty: Bool { get }
-}
-
 class ChatViewModel {
     weak var contentProvider: ChatViewModelContentProvider? {
         didSet {
@@ -42,6 +32,8 @@ class ChatViewModel {
     // MARK: ### Private ###
     private var updateEventSubject = PassthroughSubject<UpdateReason, Never>()
     private var contentProviderCancellable: AnyCancellable?
+
+    private var showConversationsPrompt: Bool = false
 }
 
 extension ChatViewModel {
@@ -64,7 +56,7 @@ extension ChatViewModel { // Coordinator API
     func start() {
         guard state == .off else { return }
 
-
+        contentProvider?.send(command: .showWelcomeMessage)
         state = .idle
     }
 
@@ -72,42 +64,15 @@ extension ChatViewModel { // Coordinator API
     func startConversation() {
         guard state == .idle else { return }
 
-        state = .assisting
+        contentProvider?.send(command: .showConversations(withPrompt: showConversationsPrompt))
 
-//        var elements = [ConversationModelElement]()
-//        elements.append(GenericDataElement(with: "Let's start! Select conversation type".localized))
-//
-//        let allAssistants = AssistantsFactory.allDescriptors.map { descriptor in
-//            let assistantIcon = UIImage(named: descriptor.iconId)
-//            let element = GenericActionElement(descriptor.identifier, title: descriptor.name.localized, icon: assistantIcon) { [weak self] identifier in
-//                self?.startAssistant(identifier, icon: assistantIcon)
-//            }
-//            element.delegate = self
-//
-//            return element
-//        }
-//        elements.append(contentsOf: allAssistants)
-//
-//        var index = _elements.count + 1
-//        append(elements: elements )
-//        _actionElements = allAssistants.map({ element in
-//            let result = (element, index)
-//            index += 1
-//            return result
-//        })
+        state = .assisting
     }
 
     func stopConversation() {
         guard state != .off else { return }
 
-//        _assistantItemCancellable = nil
-//        _currentAssistant?.stopAssisting()
-//        _currentAssistant = nil
-//        _assistantId = nil
-//        _assistantIcon = nil
-//
-//        clearActionElements()
-
+        showConversationsPrompt = true
         state = .idle
     }
     /// Stop chat model.

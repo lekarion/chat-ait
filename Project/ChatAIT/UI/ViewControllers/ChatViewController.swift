@@ -8,15 +8,6 @@
 import Combine
 import UIKit
 
-protocol ChatViewControllerDelegate: AnyObject {
-    func showSettings()
-    func clearChat()
-}
-
-protocol ChatViewControllerInterface: ViewModelPropagation {
-    var delegate: ChatViewControllerDelegate? { get set }
-}
-
 class ChatViewController: UIViewController, ChatViewControllerInterface {
     override func viewDidLoad() {
         super.viewDidLoad()
