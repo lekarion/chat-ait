@@ -16,7 +16,11 @@ class ChatCoordinator {
         }
         self.viewController = viewController
 
-        chatUICoordinator.setup(with: ChatLikeConfiguration.Builder().build())
+        chatUICoordinator.setup(with: ChatLikeConfiguration.Builder()
+            .set(chatMessageColor: UIColor.systemBlue)
+            .set(userMessageColor: UIColor.systemYellow)
+            .build())
+
         guard let rootViewController = chatUICoordinator.viewController else {
             fatalError("Cannot start main interface module")
         }
@@ -69,8 +73,8 @@ extension ChatCoordinator: ChatViewModelContentProvider {
     func send(command: ContentCommand) {
         switch command {
         case .showWelcomeMessage:
-            chatUICoordinator.push(item: ChatLikeData(text: "Welcome to the ChatAIT! Please select conversation type from the list below:".localized, image: nil, source: .chat))
-        case .showConversations:
+            chatUICoordinator.push(item: ChatLikeData(text: "Welcome message".localized, image: nil, source: .chat))
+        case .showConversations(let isWithPrompt):
             break
         }
     }
@@ -87,30 +91,4 @@ private extension ChatCoordinator {
             }
         }.store(in: &bag)
     }
-//        chatModel.event.receive(on: DispatchQueue.main).sink { [weak self] event in
-//            guard let self = self else { return }
-//
-//            switch event {
-//            case let state as StateEvent:
-//                self.process(state: state)
-//            default:
-//                break
-//            }
-//        }.store(in: &bag)
-//
-//    func process(state event: StateEvent) {
-//        switch event.state {
-//        case .assisting:
-//            if isInitialStart {
-//                chatUICoordinator.push(item: ChatLikeData(text: "Welcome message".localized, image: nil, source: .chat, creatorIcon: chatIcon))
-//                isInitialStart = false
-//            } else {
-//                chatUICoordinator.startThread()
-//            }
-//        case .off:
-//            chatUICoordinator.updateThread(ChatLikeThreadInfo(footer: event.info))
-//        default:
-//            break
-//        }
-//    }
 }
