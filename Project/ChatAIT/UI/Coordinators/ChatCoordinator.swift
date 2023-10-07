@@ -17,10 +17,10 @@ class ChatCoordinator {
         self.viewController = viewController
 
         chatUICoordinator.setup(with: ChatLikeConfiguration.Builder()
-            .set(chatMessageColor: .systemBlue)
-            .set(chatMessageTextColor: .white)
-            .set(userMessageColor: .systemYellow)
-            .set(userMessageTextColor: .black)
+            .set(chatMessageColor: UIColor(named: "AccentColor"))
+            .set(chatMessageTextColor: UIColor(named: "chatMessageTextColor"))
+            .set(userMessageColor: UIColor(named: "userMessageColor"))
+            .set(userMessageTextColor: UIColor(named: "userMessageTextColor"))
             .build())
 
         guard let rootViewController = chatUICoordinator.viewController else {
