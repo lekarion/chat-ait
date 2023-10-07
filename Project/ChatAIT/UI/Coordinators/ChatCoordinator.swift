@@ -75,7 +75,7 @@ extension ChatCoordinator: ChatViewModelContentProvider {
     func send(command: ContentCommand) {
         switch command {
         case .showWelcomeMessage:
-            chatUICoordinator.push(item: ChatLikeData(text: "Welcome message".localized, image: nil, source: .chat))
+            chatUICoordinator.push(item: ChatLikeDataObject(text: "Welcome message".localized, image: nil, source: .chat))
         case .showConversations(let isWithPrompt):
             break
         }
