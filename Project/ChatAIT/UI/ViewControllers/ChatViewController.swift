@@ -61,7 +61,7 @@ extension ChatViewController: InterfaceInstaller {
             $0.view.removeFromSuperview()
         }
 
-        contentView.addSubview(viewController.view)
+        contentView.addArrangedSubview(viewController.view)
         addChild(viewController)
     }
 }

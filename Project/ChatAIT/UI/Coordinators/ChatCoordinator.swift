@@ -100,6 +100,8 @@ private extension ChatCoordinator {
     }
 
     func didSelectTopic(_ identifier: String) {
+        guard let descriptor = AssistantsFactory.allDescriptors.first(where: { $0.identifier == identifier }) else { return }
+        chatUICoordinator.push(item: ChatLikeDataObject(text: descriptor.name.localized, image: UIImage(named: descriptor.iconId), source: .user))
     }
 
     struct ActionDescriptor: ChatLikeAction {
