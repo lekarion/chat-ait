@@ -56,9 +56,7 @@ extension ChatViewModel { // Coordinator API
     func start() {
         guard state == .off else { return }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
-            self?.contentProvider?.send(command: .showWelcomeMessage)
-        }
+        contentProvider?.send(command: .showWelcomeMessage)
 
         state = .idle
     }

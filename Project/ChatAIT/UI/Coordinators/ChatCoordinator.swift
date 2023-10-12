@@ -17,6 +17,7 @@ class ChatCoordinator {
         self.viewController = viewController
 
         chatUICoordinator.setup(with: ChatLikeConfiguration.Builder()
+            .set(chatDefaultIcon: UIImage(named: "chat-icon"))
             .set(chatMessageColor: UIColor(named: "AccentColor"))
             .set(chatMessageTextColor: UIColor(named: "chatMessageTextColor"))
             .set(userMessageColor: UIColor(named: "userMessageColor"))
@@ -53,9 +54,6 @@ class ChatCoordinator {
     private var bag = Set<AnyCancellable>()
 
     private let contentUpdateSubject = PassthroughSubject<Void, Never>()
-
-    private var isInitialStart = true
-    private lazy var chatIcon = { UIImage(named: "chat-icon") }()
 }
 
 extension ChatCoordinator: ChatViewControllerDelegate {
@@ -77,7 +75,14 @@ extension ChatCoordinator: ChatViewModelContentProvider {
         case .showWelcomeMessage:
             chatUICoordinator.push(item: ChatLikeDataObject(text: "Welcome message".localized, image: nil, source: .chat))
         case .showConversations(let isWithPrompt):
-            break
+            if isWithPrompt {
+                chatUICoordinator.push(item: ChatLikeDataObject(text: "Start prompt".localized, image: nil, source: .chat))
+            }
+            let allActions = AssistantsFactory.allDescriptors.map { descriptor in
+                let assistantIcon = UIImage(named: descriptor.iconId)
+                return ActionDescriptor(icon: assistantIcon, identifier: descriptor.identifier, title: descriptor.name.localized, handler: didSelectTopic)
+            }
+            chatUICoordinator.push(item:ChatLikeActionObject(actions: allActions))
         }
     }
 }
@@ -92,5 +97,15 @@ private extension ChatCoordinator {
                 break
             }
         }.store(in: &bag)
+    }
+
+    func didSelectTopic(_ identifier: String) {
+    }
+
+    struct ActionDescriptor: ChatLikeAction {
+        let icon: ChatLikeImage?
+        let identifier: String
+        let title: String
+        let handler: (String) -> Void
     }
 }

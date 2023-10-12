@@ -7,3 +7,4 @@
 "Dragon Assistant" = "The Dragon Game";
 
 "Welcome message" = "ChatAIT welcomes you!\nTo start the conversation, please select a topic of discussion from the list below";
+"Start prompt" = "Please select a topic of discussion from the list below";
