@@ -22,6 +22,7 @@ class ChatCoordinator {
             .set(chatMessageTextColor: UIColor(named: "chatMessageTextColor"))
             .set(userMessageColor: UIColor(named: "userMessageColor"))
             .set(userMessageTextColor: UIColor(named: "userMessageTextColor"))
+            .set(chatThinkingEnabled: true)
             .build())
 
         guard let rootViewController = chatUICoordinator.viewController else {
@@ -73,7 +74,17 @@ extension ChatCoordinator: ChatViewModelContentProvider {
     func send(command: ContentCommand) {
         switch command {
         case .showWelcomeMessage:
-            chatUICoordinator.push(item: ChatLikeDataObject(text: "Welcome message".localized, image: nil, source: .chat))
+            let allActions = AssistantsFactory.allDescriptors.map { descriptor in
+                let assistantIcon = UIImage(named: descriptor.iconId)
+                return ActionDescriptor(icon: assistantIcon, identifier: descriptor.identifier, title: descriptor.name.localized, handler: didSelectTopic)
+            }
+
+            let items: [ChatLikeItem] = [
+                ChatLikeDataObject(text: "Welcome message".localized, image: nil, source: .chat),
+                ChatLikeActionObject(actions: allActions),
+//                ChatLikeDataObject(text: "Start prompt".localized, image: nil, source: .chat)
+            ]
+            chatUICoordinator.push(item: ChatLikeUnionObject(with: items, source: .chat))
         case .showConversations(let isWithPrompt):
             if isWithPrompt {
                 chatUICoordinator.push(item: ChatLikeDataObject(text: "Start prompt".localized, image: nil, source: .chat))
@@ -82,7 +93,7 @@ extension ChatCoordinator: ChatViewModelContentProvider {
                 let assistantIcon = UIImage(named: descriptor.iconId)
                 return ActionDescriptor(icon: assistantIcon, identifier: descriptor.identifier, title: descriptor.name.localized, handler: didSelectTopic)
             }
-            chatUICoordinator.push(item:ChatLikeActionObject(actions: allActions))
+            chatUICoordinator.push(item: ChatLikeActionObject(actions: allActions))
         }
     }
 }

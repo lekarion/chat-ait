@@ -65,7 +65,7 @@ extension ChatViewModel { // Coordinator API
     func startConversation() {
         guard state == .idle else { return }
 
-        contentProvider?.send(command: .showConversations(withPrompt: showConversationsPrompt))
+//        contentProvider?.send(command: .showConversations(withPrompt: showConversationsPrompt))
 
         state = .assisting
     }
