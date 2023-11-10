@@ -33,9 +33,6 @@ protocol ChatViewModelContentProvider: AnyObject {
     func send(command: ContentCommand)
 }
 
-protocol ChatInteraction: AnyObject {
-}
-
 enum ContentCommand {
     case showWelcomeMessage
     case showConversations(withPrompt: Bool)
@@ -52,4 +49,14 @@ protocol ChatViewControllerDelegate: AnyObject {
 /// The view interface protocol
 protocol ChatViewControllerInterface: ViewModelPropagation {
     var delegate: ChatViewControllerDelegate? { get set }
+}
+
+// MARK: -
+protocol ChatInteraction: AnyObject {
+    func transform<T>(with transformer: ChatInteractionTransformer, to: T.Type) -> T?
+}
+
+protocol ChatInteractionTransformer {
+    func transformUnion<T>(subitems: [T], to: T.Type) -> T?
+    func transformInfo<T>(text: String?, image: UIImage?, to: T.Type) -> T?
 }

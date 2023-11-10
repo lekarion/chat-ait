@@ -93,8 +93,20 @@ extension ChatCoordinator: ChatViewModelContentProvider {
             }
             chatUICoordinator.push(item: ChatLikeActionObject(actions: allActions))
         case .showInteraction(let interaction):
-            break
+            guard let item = interaction.transform(with: self, to: ChatLikeItem.self) else { break }
+            chatUICoordinator.push(item: item)
         }
+    }
+}
+
+extension ChatCoordinator: ChatInteractionTransformer {
+    func transformUnion<T>(subitems: [T], to: T.Type) -> T? {
+        guard let content = subitems as? [ChatLikeItem] else { return nil }
+        return ChatLikeUnionObject(with: content, source: .chat, creatorIcon: chatViewModel.currentAssistantIcon) as? T
+    }
+
+    func transformInfo<T>(text: String?, image: UIImage?, to: T.Type) -> T? {
+        ChatLikeDataObject(text: text, image: image, source: .chat, creatorIcon: chatViewModel.currentAssistantIcon) as? T
     }
 }
 

@@ -31,6 +31,8 @@ class ChatViewModel {
         }
     }
 
+    var currentAssistantIcon: UIImage? { assistantIcon }
+
     // MARK: ### Private ###
     private var updateEventSubject = PassthroughSubject<UpdateReason, Never>()
     private var contentProviderCancellable: AnyCancellable?
@@ -137,28 +139,4 @@ private extension ChatViewModel {
 //        append(elements: result)
 //        _actionElements = actionElements
     }
-
-//    func process(_ item: DLCoreInteractionItem, startIndex: Int, container: inout [ConversationModelElement], actionsContainer: inout [(ConversationActionElement, Int)]) {
-//        if let unionItem = item as? DLCoreUnionInteractionItem {
-//            unionItem.subItems.forEach { subItem in
-//                process(subItem, startIndex: startIndex, container: &container, actionsContainer: &actionsContainer)
-//            }
-//        } else if let infoItem = item as? DLCoreInfoInteractionItem {
-//            container.append(GenericDataElement(with: infoItem, assistantIcon: _assistantIcon))
-//        } else if let actionItem = item as? DLCoreActionInteractionItem {
-//            let actions = actionItem.actions.compactMap { action in
-//                let element = GenericActionElement(with: action)
-//                element.delegate = self
-//                return element
-//            }
-//
-//            var index = startIndex + container.count
-//            container.append(contentsOf: actions)
-//            actionsContainer.append(contentsOf: actions.map({ element in
-//                let result = (element, index)
-//                index += 1
-//                return result
-//            }))
-//        }
-//    }
 }
