@@ -121,22 +121,11 @@ private extension ChatViewModel {
     static let logPrefix = "ChatViewModel:"
 
     func process(_ item: DLCoreInteractionItem?) {
-        guard let interactionItem = item else {
+        if let interactionItem = item {
+            contentProvider?.send(command: .showInteraction(InteractionWrapper(interactionItem)))
+        } else {
             stopConversation()
-            return
+            contentProvider?.send(command: .showConversations(withPrompt: true))
         }
-
-        contentProvider?.send(command: .showInteraction(InteractionWrapper(interactionItem)))
-
-//        clearActionElements()
-//
-//        var result = [ConversationModelElement]()
-//        var actionElements = [(ConversationActionElement, Int)]()
-//        process(interactionItem, startIndex: _elements.count, container: &result, actionsContainer: &actionElements)
-//
-//        guard !result.isEmpty else { return }
-//
-//        append(elements: result)
-//        _actionElements = actionElements
     }
 }

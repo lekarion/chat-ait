@@ -24,7 +24,7 @@ class ChatCoordinator {
             .set(userMessageColor: UIColor(named: "userMessageColor"))
             .set(userMessageTextColor: UIColor(named: "userMessageTextColor"))
             .set(chatThinkingEnabled: true)
-            .set(chatThinkingTime: 5.0)
+            .set(chatThinkingTime: 2.0)
             .build())
 
         guard let rootViewController = chatUICoordinator.viewController else {
@@ -85,14 +85,21 @@ extension ChatCoordinator: ChatViewModelContentProvider {
             ]
             chatUICoordinator.push(item: ChatLikeUnionObject(with: items, source: .chat))
         case .showConversations(let isWithPrompt):
-            if isWithPrompt {
-                chatUICoordinator.push(item: ChatLikeDataObject(text: "Start prompt".localized, image: nil, source: .chat))
-            }
             let allActions = AssistantsFactory.allDescriptors.map { descriptor in
                 let assistantIcon = UIImage(named: descriptor.iconId)
                 return ActionDescriptor(icon: assistantIcon, identifier: descriptor.identifier, title: descriptor.name.localized, handler: didSelectTopic)
             }
-            chatUICoordinator.push(item: ChatLikeActionObject(actions: allActions))
+
+            let actionItem = ChatLikeActionObject(actions: allActions)
+
+            if isWithPrompt {
+                chatUICoordinator.push(item: ChatLikeUnionObject(with: [
+                        ChatLikeDataObject(text: "Start prompt".localized, image: nil, source: .chat),
+                        actionItem
+                    ], source: .chat))
+            } else {
+                chatUICoordinator.push(item: actionItem)
+            }
         case .showInteraction(let interaction):
             guard let item = interaction.transform(with: self, to: ChatLikeItem.self) else { break }
             chatUICoordinator.push(item: item)
