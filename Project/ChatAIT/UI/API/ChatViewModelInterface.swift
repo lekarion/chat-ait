@@ -59,4 +59,11 @@ protocol ChatInteraction: AnyObject {
 protocol ChatInteractionTransformer {
     func transformUnion<T>(subitems: [T], to: T.Type) -> T?
     func transformInfo<T>(text: String?, image: UIImage?, to: T.Type) -> T?
+    func transformAction<T>(actions: [ChatInteractionAction], to: T.Type) -> T?
+}
+
+protocol ChatInteractionAction {
+    var title: String { get }
+    var icon: UIImage? { get }
+    var handler: () -> Void { get }
 }

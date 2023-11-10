@@ -6,6 +6,7 @@
 //
 
 import Combine
+import CocoaLumberjack
 import ChatLikeUI
 import UIKit
 
@@ -108,6 +109,15 @@ extension ChatCoordinator: ChatInteractionTransformer {
     func transformInfo<T>(text: String?, image: UIImage?, to: T.Type) -> T? {
         ChatLikeDataObject(text: text, image: image, source: .chat, creatorIcon: chatViewModel.currentAssistantIcon) as? T
     }
+
+    func transformAction<T>(actions: [ChatInteractionAction], to: T.Type) -> T? {
+        ChatLikeActionObject(actions: actions.compactMap({ action in
+            ActionDescriptor(icon: action.icon, identifier: UUID().uuidString, title: action.title) { id in
+                DDLogDebug("\(Self.logPrefix) perform action with id \(id), title - '\(action.title)'")
+                action.handler()
+            }
+        })) as? T
+    }
 }
 
 private extension ChatCoordinator {
@@ -138,4 +148,6 @@ private extension ChatCoordinator {
         let title: String
         let handler: (String) -> Void
     }
+
+    static let logPrefix = "ChatCoordinator"
 }

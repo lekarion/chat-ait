@@ -6,6 +6,7 @@
 //
 
 import DLCoreSDK
+import UIKit.UIImage
 
 extension ChatViewModel {
     class InteractionWrapper: ChatInteraction {
@@ -19,34 +20,31 @@ extension ChatViewModel {
 
 extension ChatViewModel.InteractionWrapper {
     func transform<T>(with transformer: ChatInteractionTransformer, to: T.Type) -> T? {
-        switch coreInteractionItem {
+        transform(item: coreInteractionItem, with: transformer, to: to)
+    }
+}
+
+private extension ChatViewModel.InteractionWrapper {
+    struct Action: ChatInteractionAction {
+        let title: String
+        let icon: UIImage?
+        let handler: () -> Void
+    }
+
+    func transform<T>(item: DLCoreInteractionItem, with transformer: ChatInteractionTransformer, to: T.Type) -> T? {
+        switch item {
         case let unionItem as DLCoreUnionInteractionItem:
-            return transformer.transformUnion(subitems: unionItem.subItems.compactMap({ item in
-                    transform(with: transformer, to: T.self)
+            return transformer.transformUnion(subitems: unionItem.subItems.compactMap({ subItem in
+                    transform(item: subItem, with: transformer, to: T.self)
                 }), to: T.self)
         case let infoItem as DLCoreInfoInteractionItem:
             return transformer.transformInfo(text: infoItem.text, image: infoItem.image, to: T.self)
+        case let actionItem as DLCoreActionInteractionItem:
+            return transformer.transformAction(actions: actionItem.actions.compactMap({ action in
+                Action(title: action.title, icon: action.icon, handler: action.perform)
+            }), to: T.self)
         default:
             return nil
         }
-
-//        if let unionItem = item as? DLCoreUnionInteractionItem {
-//        } else if let infoItem = item as? DLCoreInfoInteractionItem {
-//            container.append(GenericDataElement(with: infoItem, assistantIcon: _assistantIcon))
-//        } else if let actionItem = item as? DLCoreActionInteractionItem {
-//            let actions = actionItem.actions.compactMap { action in
-//                let element = GenericActionElement(with: action)
-//                element.delegate = self
-//                return element
-//            }
-//
-//            var index = startIndex + container.count
-//            container.append(contentsOf: actions)
-//            actionsContainer.append(contentsOf: actions.map({ element in
-//                let result = (element, index)
-//                index += 1
-//                return result
-//            }))
-//        }
     }
 }
