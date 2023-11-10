@@ -6,7 +6,7 @@
 //
 
 import Combine
-import ChatLikeUI_iOS
+import ChatLikeUI
 import UIKit
 
 class ChatCoordinator {
@@ -23,6 +23,7 @@ class ChatCoordinator {
             .set(userMessageColor: UIColor(named: "userMessageColor"))
             .set(userMessageTextColor: UIColor(named: "userMessageTextColor"))
             .set(chatThinkingEnabled: true)
+            .set(chatThinkingTime: 5.0)
             .build())
 
         guard let rootViewController = chatUICoordinator.viewController else {
@@ -40,11 +41,9 @@ class ChatCoordinator {
 
     func start() {
         chatViewModel.start()
-        chatViewModel.startConversation()
     }
 
     func stop() {
-        chatViewModel.stopConversation()
         chatViewModel.stop()
     }
 
@@ -81,8 +80,7 @@ extension ChatCoordinator: ChatViewModelContentProvider {
 
             let items: [ChatLikeItem] = [
                 ChatLikeDataObject(text: "Welcome message".localized, image: nil, source: .chat),
-                ChatLikeActionObject(actions: allActions),
-//                ChatLikeDataObject(text: "Start prompt".localized, image: nil, source: .chat)
+                ChatLikeActionObject(actions: allActions)
             ]
             chatUICoordinator.push(item: ChatLikeUnionObject(with: items, source: .chat))
         case .showConversations(let isWithPrompt):
@@ -94,6 +92,8 @@ extension ChatCoordinator: ChatViewModelContentProvider {
                 return ActionDescriptor(icon: assistantIcon, identifier: descriptor.identifier, title: descriptor.name.localized, handler: didSelectTopic)
             }
             chatUICoordinator.push(item: ChatLikeActionObject(actions: allActions))
+        case .showInteraction(let interaction):
+            break
         }
     }
 }
@@ -112,7 +112,12 @@ private extension ChatCoordinator {
 
     func didSelectTopic(_ identifier: String) {
         guard let descriptor = AssistantsFactory.allDescriptors.first(where: { $0.identifier == identifier }) else { return }
-        chatUICoordinator.push(item: ChatLikeDataObject(text: descriptor.name.localized, image: UIImage(named: descriptor.iconId), source: .user))
+
+        let icon = UIImage(named: descriptor.iconId)
+        chatUICoordinator.push(item: ChatLikeDataObject(text: descriptor.name.localized, image: icon, source: .user))
+
+        chatViewModel.stopConversation()
+        chatViewModel.startConversation(withAssistant: identifier, icon: icon)
     }
 
     struct ActionDescriptor: ChatLikeAction {

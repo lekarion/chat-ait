@@ -33,9 +33,13 @@ protocol ChatViewModelContentProvider: AnyObject {
     func send(command: ContentCommand)
 }
 
+protocol ChatInteraction: AnyObject {
+}
+
 enum ContentCommand {
     case showWelcomeMessage
     case showConversations(withPrompt: Bool)
+    case showInteraction(_ interaction: ChatInteraction)
 }
 
 // MARK: -
