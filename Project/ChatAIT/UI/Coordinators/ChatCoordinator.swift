@@ -119,8 +119,10 @@ extension ChatCoordinator: ChatInteractionTransformer {
 
     func transformAction<T>(actions: [ChatInteractionAction], to: T.Type) -> T? {
         ChatLikeActionObject(actions: actions.compactMap({ action in
-            ActionDescriptor(icon: action.icon, identifier: UUID().uuidString, title: action.title) { id in
+            ActionDescriptor(icon: action.icon, identifier: UUID().uuidString, title: action.title) { [weak self] id in
                 DDLogDebug("\(Self.logPrefix) perform action with id \(id), title - '\(action.title)'")
+
+                self?.chatUICoordinator.push(item: ChatLikeDataObject(text: action.title, image: nil, source: .user))
                 action.handler()
             }
         })) as? T
