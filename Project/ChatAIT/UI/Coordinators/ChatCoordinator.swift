@@ -59,10 +59,6 @@ class ChatCoordinator {
 }
 
 extension ChatCoordinator: ChatViewControllerDelegate {
-    func showSettings() {
-        // TODO: implement
-    }
-
     func clearChat() {
         chatUICoordinator.erase()
     }

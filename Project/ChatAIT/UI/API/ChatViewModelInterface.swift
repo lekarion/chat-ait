@@ -42,7 +42,6 @@ enum ContentCommand {
 // MARK: -
 /// The view action delegate
 protocol ChatViewControllerDelegate: AnyObject {
-    func showSettings()
     func clearChat()
 }
 

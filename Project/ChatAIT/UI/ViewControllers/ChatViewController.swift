@@ -42,13 +42,11 @@ class ChatViewController: UIViewController, ChatViewControllerInterface {
 }
 
 extension ChatViewController { // Actions
-    @IBAction func onShowSettings(_ sender: Any) {
-        delegate?.showSettings()
-    }
-
     @IBAction func onEraseChat(_ sender: Any) {
         delegate?.clearChat()
     }
+
+    static let settingsSegueIdentifier = "com.show.settings"
 }
 
 // MARK -
