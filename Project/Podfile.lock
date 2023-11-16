@@ -1,16 +1,21 @@
 PODS:
-  - ChatLikeUI-iOS (0.0.0.1-dev-pod):
-    - CocoaLumberjack
-  - CocoaLumberjack (3.8.1):
-    - CocoaLumberjack/Core (= 3.8.1)
-  - CocoaLumberjack/Core (3.8.1)
-  - CocoaLumberjack/Swift (3.8.1):
+  - ChatLikeUI (0.1.0.2)
+  - CocoaLumberjack (3.8.2):
+    - CocoaLumberjack/Core (= 3.8.2)
+  - CocoaLumberjack/Core (3.8.2)
+  - CocoaLumberjack/Swift (3.8.2):
     - CocoaLumberjack/Core
+  - DecouplingLabSDK (1.0.2):
+    - CocoaLumberjack
+    - DLCoreSDK
   - DL8BallAssistant (1.0.0):
     - CocoaLumberjack
     - DLAssistingSDK
   - DLAssistingSDK (1.0.4):
     - CocoaLumberjack
+  - DLCoreSDK (1.0.3):
+    - CocoaLumberjack
+    - DLAssistingSDK
   - DLDragonAssistant (1.0.1):
     - CocoaLumberjack
     - DLAssistingSDK
@@ -18,32 +23,34 @@ PODS:
   - DragonSDK (1.0.1.6)
 
 DEPENDENCIES:
-  - ChatLikeUI-iOS (from `../../chat-like-ui`)
+  - ChatLikeUI
   - CocoaLumberjack/Swift
+  - DecouplingLabSDK
   - DL8BallAssistant
   - DLDragonAssistant
 
 SPEC REPOS:
   https://github.com/lekarion/products-pod-specs.git:
+    - ChatLikeUI
+    - DecouplingLabSDK
     - DL8BallAssistant
     - DLAssistingSDK
+    - DLCoreSDK
     - DLDragonAssistant
     - DragonSDK
   trunk:
     - CocoaLumberjack
 
-EXTERNAL SOURCES:
-  ChatLikeUI-iOS:
-    :path: "../../chat-like-ui"
-
 SPEC CHECKSUMS:
-  ChatLikeUI-iOS: 4a280f5bf09aa1279c23fcee4511d04d7d805e8b
-  CocoaLumberjack: 5c7e64cdb877770859bddec4d3d5a0d7c9299df9
+  ChatLikeUI: ac5cedd5eddce3964e05a93006d512683627b5f1
+  CocoaLumberjack: f8d89a516e7710fdb2e9b8f1560b16ec6040eef0
+  DecouplingLabSDK: 81beffb0e8931bf214deb3f8b09ac69266311eaf
   DL8BallAssistant: fb0bd96aecc7ceb769acd9f59205498a6edd92d7
   DLAssistingSDK: c8fcb96d4b949193ddcd4bcf8106e2ef73bfaa6c
+  DLCoreSDK: 275211b3606f59f0903312fedb2a798c76bdb636
   DLDragonAssistant: 8ec9390956be32f743f37f0d6ff2aad5fa016eb0
   DragonSDK: c6cef16a728d11ea505411d6ebd2bff98a5a0d56
 
-PODFILE CHECKSUM: 4340eba0161733759374bcca0d99ea7f23086e58
+PODFILE CHECKSUM: 60b749140c0ab0883348fa807e0d8cbb410cd240
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.13.0
