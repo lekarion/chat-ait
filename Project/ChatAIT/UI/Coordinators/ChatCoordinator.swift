@@ -24,6 +24,7 @@ class ChatCoordinator {
             .set(userMessageColor: UIColor(named: "userMessageColor"))
             .set(userMessageTextColor: UIColor(named: "userMessageTextColor"))
             .set(chatThinkingEnabled: true)
+            .set(ignoreMessageEdgeMargin: true)
             .set(chatThinkingTime: 2.0)
             .build())
 
