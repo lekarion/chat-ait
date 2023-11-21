@@ -11,20 +11,42 @@ class AboutViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let infoDictionary = Bundle.main.infoDictionary
-        let localizedInfoDictionary = Bundle.main.localizedInfoDictionary
-
-        if let displayName = localizedInfoDictionary?["CFBundleDisplayName"] as? String {
-            appNameLabel.text = displayName
-        } else {
-            appNameLabel.text = (infoDictionary?["CFBundleName"] as? String) ?? ""
-        }
-
-        appVersionLabel.text = "Version %@ (%@)".localizedFormat((infoDictionary?["CFBundleShortVersionString"] as? String) ?? "1.0.0", (infoDictionary?["CFBundleVersion"] as? String) ?? "1")
-        appCopyrightLabel.text = (localizedInfoDictionary?["NSHumanReadableCopyright"] as? String) ?? ""
+        let aboutInfo = Bundle.main.aboutInfo
+        appNameLabel.text = aboutInfo.name
+        appVersionLabel.text = aboutInfo.version
+        appCopyrightLabel.text = aboutInfo.copyright ?? ""
     }
 
     @IBOutlet private weak var appNameLabel: UILabel!
     @IBOutlet private weak var appVersionLabel: UILabel!
     @IBOutlet private weak var appCopyrightLabel: UILabel!
+
+    // MARK: ### Private ###
+    private lazy var frameworks: [Bundle.AboutInfo] = {
+        []
+    }()
+}
+
+private extension AboutViewController {
+    static let frameworkInfoCellId = "com.about.frameworkInfoCell"
+}
+
+extension AboutViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        frameworks.count
+    }
+
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        "Used frameworks".localized
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: Self.frameworkInfoCellId, for: indexPath) as? FrameworkInfoCell else { return UITableViewCell() }
+
+        cell.setup(with: frameworks[indexPath.row])
+        return cell
+    }
+}
+
+extension AboutViewController: UITableViewDelegate {
 }

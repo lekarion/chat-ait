@@ -60,13 +60,30 @@
                                     <constraint firstItem="ziR-xs-z6x" firstAttribute="width" secondItem="uvx-yu-QSL" secondAttribute="width" id="RDG-HC-WRF"/>
                                 </constraints>
                             </stackView>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="j6u-du-TrA">
+                                <rect key="frame" x="20" y="391.66666666666674" width="353" height="406.33333333333326"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="com.about.frameworkInfoCell" id="K7y-jn-6eN">
+                                        <rect key="frame" x="0.0" y="50" width="353" height="43.666667938232422"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="K7y-jn-6eN" id="4Lg-yX-HUQ">
+                                            <rect key="frame" x="0.0" y="0.0" width="353" height="43.666667938232422"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="j6u-du-TrA" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="20" id="SC5-hp-MkN"/>
                             <constraint firstItem="uvx-yu-QSL" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" constant="20" id="Tmm-y5-0kQ"/>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="uvx-yu-QSL" secondAttribute="bottom" constant="20" id="gCa-UB-eeq"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="j6u-du-TrA" secondAttribute="bottom" constant="20" id="VAB-pB-fhz"/>
                             <constraint firstItem="uvx-yu-QSL" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="20" id="gO7-zf-WOo"/>
+                            <constraint firstItem="j6u-du-TrA" firstAttribute="top" secondItem="uvx-yu-QSL" secondAttribute="bottom" constant="20" id="i6r-wf-e0R"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="j6u-du-TrA" secondAttribute="trailing" constant="20" id="ka8-CK-O0Y"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="uvx-yu-QSL" secondAttribute="trailing" constant="20" id="zRX-tk-yOd"/>
                         </constraints>
                     </view>
@@ -78,7 +95,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="131" y="-27"/>
+            <point key="canvasLocation" x="130.53435114503816" y="-27.464788732394368"/>
         </scene>
     </scenes>
     <resources>
