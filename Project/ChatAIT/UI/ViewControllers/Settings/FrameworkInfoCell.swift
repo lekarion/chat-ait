@@ -8,6 +8,31 @@
 import UIKit
 
 class FrameworkInfoCell: UITableViewCell {
-    func setup(with frameworkInfo: Bundle.AboutInfo) {
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        updateUI()
     }
+
+    func setup(with frameworkInfo: Bundle.AboutInfo) {
+        info = frameworkInfo
+
+        if nil != nameLabel {
+            updateUI()
+        }
+    }
+
+    private func updateUI() {
+        if let info = info {
+            nameLabel.text = info.name
+            infoLabel.text = info.version + (nil != info.copyright ? "\n\(info.copyright ?? "")" : "")
+        } else {
+            nameLabel.text = "unknown".localized
+            infoLabel.text = ""
+        }
+    }
+
+    @IBOutlet private weak var nameLabel: UILabel!
+    @IBOutlet private weak var infoLabel: UILabel!
+
+    private var info: Bundle.AboutInfo?
 }

@@ -10,6 +10,7 @@ import Foundation
 extension Bundle {
     struct AboutInfo {
         let name: String
+        let bundleName: String
         let version: String
         let copyright: String?
     }
@@ -31,7 +32,7 @@ extension Bundle {
         version = "Version %@ (%@)".localizedFormat((infoDictionary?["CFBundleShortVersionString"] as? String) ?? "1.0.0", (infoDictionary?["CFBundleVersion"] as? String) ?? "1")
         copyright = (localizedInfoDictionary?["NSHumanReadableCopyright"] as? String)
 
-        return AboutInfo(name: name, version: version, copyright: copyright)
+        return AboutInfo(name: name, bundleName: bundleURL.lastPathComponent, version: version, copyright: copyright)
     }
 
     var bundleFrameworks: [Bundle]? {

@@ -23,7 +23,8 @@ class AboutViewController: UIViewController {
 
     // MARK: ### Private ###
     private lazy var frameworks: [Bundle.AboutInfo] = {
-        []
+        guard let bundleFrameworks = Bundle.main.bundleFrameworks else { return [] }
+        return bundleFrameworks.compactMap { $0.aboutInfo }.sorted { $0.name < $1.name }
     }()
 }
 
@@ -34,10 +35,6 @@ private extension AboutViewController {
 extension AboutViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         frameworks.count
-    }
-
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        "Used frameworks".localized
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
