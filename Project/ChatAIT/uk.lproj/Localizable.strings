@@ -1,0 +1,12 @@
+/* 
+  Localizable.strings
+  ChatAIT
+*/
+
+"Magic 8 Ball Assistant" = "Магічний 8-й шар";
+"Dragon Assistant" = "Гра 'Дракон'";
+
+"Welcome message" = "ChatAIT вітає вас!\nЩоб розпочати розмову, будь ласка, виберіть тему обговорення зі списку нижче";
+"Start prompt" = "Виберіть тему обговорення зі списку нижче, будь ласка";
+
+"Version %@ (%@)" = "Версія %@ (%@)";
