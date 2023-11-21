@@ -1,0 +1,9 @@
+
+/* Class = "UINavigationItem"; title = "Settings"; ObjectID = "g1w-gk-aGk"; */
+"g1w-gk-aGk.title" = "Налаштування";
+
+/* Class = "UITableViewController"; title = "Settings"; ObjectID = "nGm-Rg-btH"; */
+"nGm-Rg-btH.title" = "Налаштування";
+
+/* Class = "UILabel"; text = "About"; ObjectID = "p7w-c6-j7p"; */
+"p7w-c6-j7p.text" = "Про застосунок";
