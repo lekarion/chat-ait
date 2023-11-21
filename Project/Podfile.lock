@@ -1,5 +1,6 @@
 PODS:
-  - ChatLikeUI (0.1.0.2)
+  - ChatLikeUI (0.1.0.3):
+    - CocoaLumberjack
   - CocoaLumberjack (3.8.2):
     - CocoaLumberjack/Core (= 3.8.2)
   - CocoaLumberjack/Core (3.8.2)
@@ -42,7 +43,7 @@ SPEC REPOS:
     - CocoaLumberjack
 
 SPEC CHECKSUMS:
-  ChatLikeUI: ac5cedd5eddce3964e05a93006d512683627b5f1
+  ChatLikeUI: 1bdd6e78cc6c80eef8a9143ec11b3b9df59a90b8
   CocoaLumberjack: f8d89a516e7710fdb2e9b8f1560b16ec6040eef0
   DecouplingLabSDK: 81beffb0e8931bf214deb3f8b09ac69266311eaf
   DL8BallAssistant: fb0bd96aecc7ceb769acd9f59205498a6edd92d7
