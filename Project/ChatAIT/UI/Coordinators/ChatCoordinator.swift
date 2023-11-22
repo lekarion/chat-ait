@@ -5,11 +5,16 @@
 //  Created by developer on 30.09.2023.
 //
 
+// MARK: - ### MVC (Apple) - Controller ### -
+
 import Combine
 import CocoaLumberjack
 import ChatLikeUI
 import UIKit
 
+/**
+    Chat coordinator class, in Apple MVC architecture, implementation of the `Controller` component. It owns `Model` and `View` components. As a delegate of the `View` component, it handles user actions that result in modification of the `Model`. As commands sender, it provides data to be presented by the `View` component.
+ */
 class ChatCoordinator {
     init(viewController: UIViewController) {
         guard let controller = viewController as? (InterfaceInstaller & ChatViewControllerInterface) else {

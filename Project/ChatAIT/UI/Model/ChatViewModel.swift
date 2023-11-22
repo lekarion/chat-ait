@@ -5,12 +5,17 @@
 //  Created by developer on 04.09.2023.
 //
 
+// MARK: - ### MVC (Apple) - Model ### -
+
 import CocoaLumberjack
 import Combine
 import DecouplingLabSDK
 import DLCoreSDK
 import UIKit
 
+/**
+    Chat model class, in Apple MVC architecture, implementation of the `Model` component. It has a reference to the `Controller` interface, which provides an API for receiving notifications about user actions from the `View` component and sending notifications to the `Controller` about model data changes.
+ */
 class ChatViewModel {
     weak var contentProvider: ChatViewModelContentProvider? {
         didSet {

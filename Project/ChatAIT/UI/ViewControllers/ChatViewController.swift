@@ -5,9 +5,14 @@
 //  Created by developer on 31.08.2023.
 //
 
+// MARK: - ### MVC (Apple) - View ### -
+
 import Combine
 import UIKit
 
+/**
+    Chat root view controller class, in Apple MVC architecture, implementation of the `View` component. It notifies the `delegate` of user actions and handles model data update notifications. Also, this class is responsible for visualizing model data using the `ChatLikeUI` visual component.
+ */
 class ChatViewController: UIViewController, ChatViewControllerInterface {
     override func viewDidLoad() {
         super.viewDidLoad()
