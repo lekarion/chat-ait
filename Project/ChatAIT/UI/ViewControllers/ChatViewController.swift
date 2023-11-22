@@ -25,13 +25,13 @@ class ChatViewController: UIViewController, ChatViewControllerInterface {
     weak var delegate: ChatViewControllerDelegate?
 
     // MARK: ### Private ###
-    private weak var viewModel: ChatViewModelInterface? {
+    private weak var viewModel: ChatModelInterface? {
         didSet {
             guard oldValue !== viewModel else { return }
             viewModelCancellable = viewModel?.updateEvent.receive(on: DispatchQueue.main).sink { [weak self] reason in
                 switch reason {
-                case .contentChanged:
-                    self?.updateUI()
+//                case .contentChanged:
+//                    self?.updateUI()
                 default:
                     break
                 }
@@ -70,13 +70,13 @@ extension ChatViewController: InterfaceInstaller {
 }
 
 extension ChatViewController { // ViewModelPropagation
-    func propagate(viewModel: ChatViewModelInterface) {
+    func propagate(viewModel: ChatModelInterface) {
         self.viewModel = viewModel
     }
 }
 // MARK: -
 private extension ChatViewController {
     func updateUI() {
-        eraseButton.isEnabled = viewModel?.isChatEmpty == false
+//        eraseButton.isEnabled = viewModel?.isChatEmpty == false
     }
 }

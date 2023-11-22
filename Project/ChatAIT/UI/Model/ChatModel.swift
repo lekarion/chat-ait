@@ -1,5 +1,5 @@
 //
-//  ChatViewModel.swift
+//  ChatModel.swift
 //  ChatAIT
 //
 //  Created by developer on 04.09.2023.
@@ -16,20 +16,8 @@ import UIKit
 /**
     Chat model class, in Apple MVC architecture, implementation of the `Model` component. It has a reference to the `Controller` interface, which provides an API for receiving notifications about user actions from the `View` component and sending notifications to the `Controller` about model data changes.
  */
-class ChatViewModel {
-    weak var contentProvider: ChatViewModelContentProvider? {
-        didSet {
-            guard oldValue !== contentProvider else { return }
-
-            contentProviderCancellable = contentProvider?.updateEvent.receive(on: DispatchQueue.main).sink { [weak self] in
-                self?.updateEventSubject.send(.contentChanged)
-            }
-
-            updateEventSubject.send(.contentChanged)
-        }
-    }
-
-    private (set) var state: State = .off {
+class ChatModel {
+    private (set) var state: ChatModelState = .off {
         didSet {
             guard oldValue != state else { return }
             updateEventSubject.send(.stateChanged(state: state))
@@ -39,7 +27,7 @@ class ChatViewModel {
     var currentAssistantIcon: UIImage? { assistantIcon }
 
     // MARK: ### Private ###
-    private var updateEventSubject = PassthroughSubject<UpdateReason, Never>()
+    private var updateEventSubject = PassthroughSubject<ChatModelUpdateReason, Never>()
     private var contentProviderCancellable: AnyCancellable?
 
     private var assistantId: String?
@@ -50,29 +38,14 @@ class ChatViewModel {
     private var showConversationsPrompt: Bool = false
 }
 
-extension ChatViewModel {
-    enum State {
-        case off, idle, assisting
-    }
-
-    enum UpdateReason {
-        case stateChanged(state: State)
-        case contentChanged
-    }
-
-    enum Action {
-        case clearContent, showSettings
-    }
-}
-
-extension ChatViewModel { // Coordinator API
+extension ChatModel { // Coordinator API
     /// Start chat model.
     func start() {
         guard state == .off else { return }
 
-        contentProvider?.send(command: .showWelcomeMessage)
-
         state = .idle
+
+        updateEventSubject.send(.commandReceived(command: showWelcomeMessage()))
     }
     /// Start new conversation
     func startConversation(withAssistant identifier: String, icon: UIImage? = nil) {
@@ -117,20 +90,29 @@ extension ChatViewModel { // Coordinator API
     }
 }
 
-extension ChatViewModel: ChatViewModelInterface { // View controller API
-    var updateEvent: AnyPublisher<UpdateReason, Never> { updateEventSubject.eraseToAnyPublisher() }
-    var isChatEmpty: Bool { contentProvider?.isEmpty ?? true }
+extension ChatModel: ChatModelInterface {
+    var updateEvent: AnyPublisher<ChatModelUpdateReason, Never> { updateEventSubject.eraseToAnyPublisher() }
 }
 
-private extension ChatViewModel {
-    static let logPrefix = "ChatViewModel:"
+private extension ChatModel {
+    static let logPrefix = "ChatModel:"
 
     func process(_ item: DLCoreInteractionItem?) {
         if let interactionItem = item {
-            contentProvider?.send(command: .showInteraction(InteractionWrapper(interactionItem)))
+            updateEventSubject.send(.commandReceived(command: InteractionWrapper(interactionItem)))
         } else {
             stopConversation()
-            contentProvider?.send(command: .showConversations(withPrompt: true))
+            updateEventSubject.send(.commandReceived(command: showConversations(withPrompt: true)))
         }
+    }
+
+    func showWelcomeMessage() -> ChatModelCommand { InteractionWrapper(by: .welcomeMessage, handler: didSelectAssistant) }
+    func showConversations(withPrompt: Bool) -> ChatModelCommand { InteractionWrapper(by: .continueMessage(withPrompt: withPrompt), handler: didSelectAssistant) }
+
+    func didSelectAssistant(_ command: DLCoreInteractionItem, _ identifier: String, _ icon: UIImage?) {
+        updateEventSubject.send(.commandReceived(command: ChatModel.InteractionWrapper(command)))
+
+        stopConversation()
+        startConversation(withAssistant: identifier, icon: icon)
     }
 }

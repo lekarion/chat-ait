@@ -16,7 +16,7 @@ protocol UpdateEvent: ChatViewModelEvent {
 }
 
 protocol StateEvent: UpdateEvent {
-    var state: ChatViewModel.State { get }
+    var state: ChatModelState { get }
 }
 
 protocol ElementEvent: UpdateEvent {
@@ -31,14 +31,14 @@ enum UpdateEventKind {
 // MARK: -
 
 class StateUpdateEvent: StateEvent {
-    init(_ state: ChatViewModel.State, comment: String? = nil) {
+    init(_ state: ChatModelState, comment: String? = nil) {
         self.state = state
         self.info = comment
     }
 
     let kind: UpdateEventKind = .stateUpdate
     let info: String?
-    let state: ChatViewModel.State
+    let state: ChatModelState
 }
 
 class ElementUpdateEvent: ElementEvent {

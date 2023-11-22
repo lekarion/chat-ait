@@ -15,15 +15,41 @@ protocol InterfaceInstaller: AnyObject {
 
 /// The view model propagation interface
 protocol ViewModelPropagation: AnyObject {
-    func propagate(viewModel: ChatViewModelInterface)
+    func propagate(viewModel: ChatModelInterface)
 }
 
 // MARK: -
 /// The chat view model interface protocol
-protocol ChatViewModelInterface: AnyObject {
-    var updateEvent: AnyPublisher<ChatViewModel.UpdateReason, Never> { get }
-    var isChatEmpty: Bool { get }
+protocol ChatModelInterface: AnyObject {
+    var updateEvent: AnyPublisher<ChatModelUpdateReason, Never> { get }
 }
+
+enum ChatModelState {
+    case off, idle, assisting
+}
+
+enum ChatModelUpdateReason {
+    case stateChanged(state: ChatModelState)
+    case commandReceived(command: ChatModelCommand)
+}
+
+protocol ChatModelCommand: AnyObject {
+    func transform<T>(with transformer: ChatModelCommandTransformer, to: T.Type) -> T?
+}
+
+protocol ChatModelCommandTransformer {
+    func transformUnion<T>(subitems: [T], to: T.Type) -> T?
+    func transformInfo<T>(text: String?, image: UIImage?, to: T.Type) -> T?
+    func transformAction<T>(actions: [ChatModelCommandAction], to: T.Type) -> T?
+}
+
+protocol ChatModelCommandAction {
+    var title: String { get }
+    var icon: UIImage? { get }
+    var handler: () -> Void { get }
+}
+
+// MARK: -
 
 /// The chat view model external content data provider interface
 protocol ChatViewModelContentProvider: AnyObject {

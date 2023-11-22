@@ -37,8 +37,6 @@ class ChatCoordinator {
             fatalError("Cannot start main interface module")
         }
 
-        chatViewModel.contentProvider = self
-
         controller.install(viewController: rootViewController)
         controller.propagate(viewModel: chatViewModel)
         controller.delegate = self
@@ -57,7 +55,7 @@ class ChatCoordinator {
     // MARK: ### Private ###
     private let viewController: UIViewController
     private let chatUICoordinator = ChatLikeCoordinator()
-    private let chatViewModel = ChatViewModel()
+    private let chatViewModel = ChatModel()
     private var bag = Set<AnyCancellable>()
 
     private let contentUpdateSubject = PassthroughSubject<Void, Never>()
@@ -103,13 +101,14 @@ extension ChatCoordinator: ChatViewModelContentProvider {
                 chatUICoordinator.push(item: actionItem)
             }
         case .showInteraction(let interaction):
-            guard let item = interaction.transform(with: self, to: ChatLikeItem.self) else { break }
-            chatUICoordinator.push(item: item)
+            break
+//            guard let item = interaction.transform(with: self, to: ChatLikeItem.self) else { break }
+//            chatUICoordinator.push(item: item)
         }
     }
 }
 
-extension ChatCoordinator: ChatInteractionTransformer {
+extension ChatCoordinator: ChatModelCommandTransformer {
     func transformUnion<T>(subitems: [T], to: T.Type) -> T? {
         guard let content = subitems as? [ChatLikeItem] else { return nil }
         return ChatLikeUnionObject(with: content, source: .chat, creatorIcon: chatViewModel.currentAssistantIcon) as? T
@@ -119,7 +118,7 @@ extension ChatCoordinator: ChatInteractionTransformer {
         ChatLikeDataObject(text: text, image: image, source: .chat, creatorIcon: chatViewModel.currentAssistantIcon) as? T
     }
 
-    func transformAction<T>(actions: [ChatInteractionAction], to: T.Type) -> T? {
+    func transformAction<T>(actions: [ChatModelCommandAction], to: T.Type) -> T? {
         ChatLikeActionObject(actions: actions.compactMap({ action in
             ActionDescriptor(icon: action.icon, identifier: UUID().uuidString, title: action.title) { [weak self] id in
                 DDLogDebug("\(Self.logPrefix) perform action with id \(id), title - '\(action.title)'")
@@ -139,6 +138,19 @@ private extension ChatCoordinator {
                 self?.contentUpdateSubject.send()
             default:
                 break
+            }
+        }.store(in: &bag)
+
+        chatViewModel.updateEvent.receive(on: DispatchQueue.main).sink { [weak self] reason in
+            guard let self = self else { return }
+
+            switch reason {
+            case .stateChanged(let state):
+                // TODO: update view
+                break
+            case .commandReceived(let command):
+                guard let item = command.transform(with: self, to: ChatLikeItem.self) else { break }
+                chatUICoordinator.push(item: item)
             }
         }.store(in: &bag)
     }
