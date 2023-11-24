@@ -15,12 +15,12 @@ import UIKit
 /**
     Chat coordinator class, in Apple MVC architecture, implementation of the `Controller` component. It owns `Model` and `View` components. As a delegate of the `View` component, it handles user actions that result in modification of the `Model`. As commands sender, it provides data to be presented by the `View` component.
  */
-class ChatCoordinator {
+class ChatCoordinator: ChatControllerInterface, ChatViewModelInterface {
     init(viewController: UIViewController) {
-        guard let controller = viewController as? (InterfaceInstaller & ChatViewControllerInterface) else {
+        guard let rootView = viewController as? ChatViewInterface else {
             fatalError("Invalid main view controller class")
         }
-        self.viewController = viewController
+        self.rootView = rootView
 
         chatUICoordinator.setup(with: ChatLikeConfiguration.Builder()
             .set(chatDefaultIcon: UIImage(named: "chat-icon"))
@@ -33,89 +33,76 @@ class ChatCoordinator {
             .set(chatThinkingTime: 2.0)
             .build())
 
-        guard let rootViewController = chatUICoordinator.viewController else {
+        guard let chatViewController = chatUICoordinator.viewController else {
             fatalError("Cannot start main interface module")
         }
 
-        controller.install(viewController: rootViewController)
-        controller.propagate(viewModel: chatViewModel)
-        controller.delegate = self
+        self.rootView.install(chatViewController: chatViewController)
+        self.rootView.viewModel = self
+        self.rootView.delegate = self
 
         bindEvents()
     }
 
     func start() {
-        chatViewModel.start()
+        chatModel.start()
     }
 
     func stop() {
-        chatViewModel.stop()
+        chatModel.stop()
     }
 
-    // MARK: ### Private ###
-    private let viewController: UIViewController
-    private let chatUICoordinator = ChatLikeCoordinator()
-    private let chatViewModel = ChatModel()
-    private var bag = Set<AnyCancellable>()
+    let isEmpty = CurrentValueSubject<Bool, Never>(true)
 
-    private let contentUpdateSubject = PassthroughSubject<Void, Never>()
+    // MARK: ### Private ###
+    private let chatModel = ChatModel()
+    private let rootView: ChatViewInterface
+
+    private let chatUICoordinator = ChatLikeCoordinator()
+    private var bag = Set<AnyCancellable>()
 }
 
-extension ChatCoordinator: ChatViewControllerDelegate {
-    func clearChat() {
+extension ChatCoordinator: ChatViewDelegate {
+    func viewInterfaceDidRequestErase(_ viewInterface: ChatViewInterface) {
         chatUICoordinator.erase()
     }
 }
 
-extension ChatCoordinator: ChatViewModelContentProvider {
-    var isEmpty: Bool { chatUICoordinator.isEmpty }
-    var updateEvent: AnyPublisher<Void, Never> { contentUpdateSubject.eraseToAnyPublisher() }
-
-    func send(command: ContentCommand) {
-        switch command {
-        case .showWelcomeMessage:
-            let allActions = AssistantsFactory.allDescriptors.map { descriptor in
-                let assistantIcon = UIImage(named: descriptor.iconId)
-                return ActionDescriptor(icon: assistantIcon, identifier: descriptor.identifier, title: descriptor.name.localized, handler: didSelectTopic)
+private extension ChatCoordinator {
+    func bindEvents() {
+        chatUICoordinator.notificationEvent.receive(on: DispatchQueue.main).sink { [weak self] event in
+            switch event {
+            case .didUpdateContent:
+                self?.isEmpty.value = self?.chatUICoordinator.isEmpty ?? false
+            default:
+                break
             }
+        }.store(in: &bag)
 
-            let items: [ChatLikeItem] = [
-                ChatLikeDataObject(text: "Welcome message".localized, image: nil, source: .chat),
-                ChatLikeActionObject(actions: allActions)
-            ]
-            chatUICoordinator.push(item: ChatLikeUnionObject(with: items, source: .chat))
-        case .showConversations(let isWithPrompt):
-            let allActions = AssistantsFactory.allDescriptors.map { descriptor in
-                let assistantIcon = UIImage(named: descriptor.iconId)
-                return ActionDescriptor(icon: assistantIcon, identifier: descriptor.identifier, title: descriptor.name.localized, handler: didSelectTopic)
+        chatModel.modelUpdateEvent.receive(on: DispatchQueue.main).sink { [weak self] reason in
+            guard let self = self else { return }
+
+            switch reason {
+            case .stateChanged(let state):
+                DDLogDebug("\(Self.logPrefix) \(#function); new model state is \(state)")
+            case .commandReceived(let command):
+                guard let item = command.transform(with: self, to: ChatLikeItem.self) else { break }
+                chatUICoordinator.push(item: item)
             }
-
-            let actionItem = ChatLikeActionObject(actions: allActions)
-
-            if isWithPrompt {
-                chatUICoordinator.push(item: ChatLikeUnionObject(with: [
-                        ChatLikeDataObject(text: "Start prompt".localized, image: nil, source: .chat),
-                        actionItem
-                    ], source: .chat))
-            } else {
-                chatUICoordinator.push(item: actionItem)
-            }
-        case .showInteraction(let interaction):
-            break
-//            guard let item = interaction.transform(with: self, to: ChatLikeItem.self) else { break }
-//            chatUICoordinator.push(item: item)
-        }
+        }.store(in: &bag)
     }
+
+    static let logPrefix = "ChatCoordinator"
 }
 
 extension ChatCoordinator: ChatModelCommandTransformer {
     func transformUnion<T>(subitems: [T], to: T.Type) -> T? {
         guard let content = subitems as? [ChatLikeItem] else { return nil }
-        return ChatLikeUnionObject(with: content, source: .chat, creatorIcon: chatViewModel.currentAssistantIcon) as? T
+        return ChatLikeUnionObject(with: content, source: .chat, creatorIcon: chatModel.currentAssistantIcon) as? T
     }
 
     func transformInfo<T>(text: String?, image: UIImage?, to: T.Type) -> T? {
-        ChatLikeDataObject(text: text, image: image, source: .chat, creatorIcon: chatViewModel.currentAssistantIcon) as? T
+        ChatLikeDataObject(text: text, image: image, source: .chat, creatorIcon: chatModel.currentAssistantIcon) as? T
     }
 
     func transformAction<T>(actions: [ChatModelCommandAction], to: T.Type) -> T? {
@@ -128,49 +115,11 @@ extension ChatCoordinator: ChatModelCommandTransformer {
             }
         })) as? T
     }
-}
 
-private extension ChatCoordinator {
-    func bindEvents() {
-        chatUICoordinator.notificationEvent.receive(on: DispatchQueue.main).sink { [weak self] event in
-            switch event {
-            case .didUpdateContent:
-                self?.contentUpdateSubject.send()
-            default:
-                break
-            }
-        }.store(in: &bag)
-
-        chatViewModel.updateEvent.receive(on: DispatchQueue.main).sink { [weak self] reason in
-            guard let self = self else { return }
-
-            switch reason {
-            case .stateChanged(let state):
-                // TODO: update view
-                break
-            case .commandReceived(let command):
-                guard let item = command.transform(with: self, to: ChatLikeItem.self) else { break }
-                chatUICoordinator.push(item: item)
-            }
-        }.store(in: &bag)
-    }
-
-    func didSelectTopic(_ identifier: String) {
-        guard let descriptor = AssistantsFactory.allDescriptors.first(where: { $0.identifier == identifier }) else { return }
-
-        let icon = UIImage(named: descriptor.iconId)
-        chatUICoordinator.push(item: ChatLikeDataObject(text: descriptor.name.localized, image: icon, source: .user))
-
-        chatViewModel.stopConversation()
-        chatViewModel.startConversation(withAssistant: identifier, icon: icon)
-    }
-
-    struct ActionDescriptor: ChatLikeAction {
+    private struct ActionDescriptor: ChatLikeAction {
         let icon: ChatLikeImage?
         let identifier: String
         let title: String
         let handler: (String) -> Void
     }
-
-    static let logPrefix = "ChatCoordinator"
 }

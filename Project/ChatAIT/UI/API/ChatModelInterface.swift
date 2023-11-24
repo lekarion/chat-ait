@@ -14,6 +14,17 @@ import UIKit.UIImage
 protocol ChatModelInterface: AnyObject {
     /// chat model update notification event
     var modelUpdateEvent: AnyPublisher<ChatModelUpdateReason, Never> { get }
+
+    /// Start chat model
+    func start()
+    /// Start new conversation
+    /// - Parameter identifier: unique identifier for a new conversation
+    /// - Parameter icon: custom conversation icon
+    func startConversation(withAssistant identifier: String, icon: UIImage?)
+    /// Stop current conversation
+    func stopConversation()
+    /// Stop chat model
+    func stop()
 }
 /// The reason for sending the update event
 enum ChatModelUpdateReason {

@@ -38,8 +38,9 @@ class ChatModel {
     private var showConversationsPrompt: Bool = false
 }
 
-extension ChatModel { // Coordinator API
-    /// Start chat model.
+extension ChatModel: ChatModelInterface {
+    var modelUpdateEvent: AnyPublisher<ChatModelUpdateReason, Never> { updateEventSubject.eraseToAnyPublisher() }
+
     func start() {
         guard state == .off else { return }
 
@@ -47,7 +48,7 @@ extension ChatModel { // Coordinator API
 
         updateEventSubject.send(.commandReceived(command: showWelcomeMessage()))
     }
-    /// Start new conversation
+
     func startConversation(withAssistant identifier: String, icon: UIImage? = nil) {
         guard state == .idle else { return }
 
@@ -67,7 +68,7 @@ extension ChatModel { // Coordinator API
 
         state = .assisting
     }
-    /// Start current conversation
+
     func stopConversation() {
         guard state != .off else { return }
 
@@ -80,7 +81,7 @@ extension ChatModel { // Coordinator API
         showConversationsPrompt = true
         state = .idle
     }
-    /// Stop chat model.
+
     func stop() {
         guard state != .off else { return }
 
@@ -88,10 +89,6 @@ extension ChatModel { // Coordinator API
 
         state = .off
     }
-}
-
-extension ChatModel: ChatModelInterface {
-    var updateEvent: AnyPublisher<ChatModelUpdateReason, Never> { updateEventSubject.eraseToAnyPublisher() }
 }
 
 private extension ChatModel {

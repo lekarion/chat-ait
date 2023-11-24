@@ -11,9 +11,9 @@ import Combine
 import UIKit
 
 /**
-    Chat root view controller class, in Apple MVC architecture, implementation of the `View` component. It notifies the `delegate` of user actions and handles model data update notifications. Also, this class is responsible for visualizing model data using the `ChatLikeUI` visual component.
+    Chat root view controller class, in Apple MVC architecture, implementation of the `View` component. It notifies the `delegate` of user actions and handles model data update notifications.
  */
-class ChatViewController: UIViewController, ChatViewControllerInterface {
+class ChatViewController: UIViewController, ChatViewInterface {
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -22,61 +22,49 @@ class ChatViewController: UIViewController, ChatViewControllerInterface {
         updateUI()
     }
 
-    weak var delegate: ChatViewControllerDelegate?
-
-    // MARK: ### Private ###
-    private weak var viewModel: ChatModelInterface? {
+    weak var delegate: ChatViewDelegate?
+    weak var viewModel: ChatViewModelInterface? {
         didSet {
             guard oldValue !== viewModel else { return }
-            viewModelCancellable = viewModel?.updateEvent.receive(on: DispatchQueue.main).sink { [weak self] reason in
-                switch reason {
-//                case .contentChanged:
-//                    self?.updateUI()
-                default:
-                    break
-                }
-            }
+
+            viewModelBag.removeAll()
+            viewModel?.isEmpty.receive(on: DispatchQueue.main).sink { [weak self] _ in
+                self?.updateUI()
+            }.store(in: &viewModelBag)
         }
     }
 
-    @IBOutlet private weak var contentView: UIStackView!
-    @IBOutlet private weak var settingsButton: UIButton!
-    @IBOutlet private weak var eraseButton: UIButton!
-
-    private var viewModelCancellable: AnyCancellable?
-}
-
-extension ChatViewController { // Actions
-    @IBAction func onEraseChat(_ sender: Any) {
-        delegate?.clearChat()
-    }
-
-    static let settingsSegueIdentifier = "com.show.settings"
-}
-
-// MARK -
-extension ChatViewController: InterfaceInstaller {
-    func install(viewController: UIViewController) {
-        guard nil == viewController.parent else { return }
+    func install(chatViewController: UIViewController) {
+        guard nil == chatViewController.parent else { return }
 
         children.forEach {
             $0.removeFromParent()
             $0.view.removeFromSuperview()
         }
 
-        contentView.addArrangedSubview(viewController.view)
-        addChild(viewController)
+        contentView.addArrangedSubview(chatViewController.view)
+        addChild(chatViewController)
     }
+
+    // MARK: ### Private ###
+    @IBOutlet private weak var contentView: UIStackView!
+    @IBOutlet private weak var settingsButton: UIButton!
+    @IBOutlet private weak var eraseButton: UIButton!
+
+    private var viewModelBag = Set<AnyCancellable>()
 }
 
-extension ChatViewController { // ViewModelPropagation
-    func propagate(viewModel: ChatModelInterface) {
-        self.viewModel = viewModel
+extension ChatViewController { // Actions
+    @IBAction func onEraseChat(_ sender: Any) {
+        delegate?.viewInterfaceDidRequestErase(self)
     }
+
+    static let settingsSegueIdentifier = "com.show.settings"
 }
+
 // MARK: -
 private extension ChatViewController {
     func updateUI() {
-//        eraseButton.isEnabled = viewModel?.isChatEmpty == false
+        eraseButton.isEnabled = viewModel?.isEmpty.value == false
     }
 }
