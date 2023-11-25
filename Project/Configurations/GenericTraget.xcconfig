@@ -18,8 +18,11 @@ INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard
 INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait
 INFOPLIST_KEY_UIMainStoryboardFile = Main
 INFOPLIST_KEY_NSHumanReadableCopyright = Copyright © 2022-2024 Oleg Yaros. All rights reserved.
+INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard
+INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait
+INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown
 
-TARGETED_DEVICE_FAMILY = 1
+TARGETED_DEVICE_FAMILY = 1,2
 SUPPORTED_PLATFORMS = iphoneos iphonesimulator
 SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO
 SUPPORTS_MACCATALYST = NO
