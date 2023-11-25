@@ -60,11 +60,15 @@ class ChatCoordinator: ChatControllerInterface, ChatViewModelInterface {
 
     private let chatUICoordinator = ChatLikeCoordinator()
     private var bag = Set<AnyCancellable>()
+
+    private var contentEraseRequested = false
 }
 
 extension ChatCoordinator: ChatViewDelegate {
     func viewInterfaceDidRequestErase(_ viewInterface: ChatViewInterface) {
         DDLogDebug("\(Self.logPrefix) \(#function)")
+
+        contentEraseRequested = true
         chatUICoordinator.erase()
     }
 
@@ -76,9 +80,16 @@ extension ChatCoordinator: ChatViewDelegate {
 private extension ChatCoordinator {
     func bindEvents() {
         chatUICoordinator.notificationEvent.receive(on: DispatchQueue.main).sink { [weak self] event in
+            guard let self = self else { return }
+
             switch event {
             case .didUpdateContent:
-                self?.isEmpty.value = self?.chatUICoordinator.isEmpty ?? false
+                if self.contentEraseRequested && !self.isEmpty.value {
+                    self.isEmpty.value = true
+                    self.contentEraseRequested = false
+                } else if !self.contentEraseRequested && self.isEmpty.value {
+                    self.isEmpty.value = false
+                }
             default:
                 break
             }
