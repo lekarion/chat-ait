@@ -64,7 +64,12 @@ class ChatCoordinator: ChatControllerInterface, ChatViewModelInterface {
 
 extension ChatCoordinator: ChatViewDelegate {
     func viewInterfaceDidRequestErase(_ viewInterface: ChatViewInterface) {
+        DDLogDebug("\(Self.logPrefix) \(#function)")
         chatUICoordinator.erase()
+    }
+
+    func viewInterfaceDidShowSettings(_ viewInterface: ChatViewInterface) {
+        DDLogDebug("\(Self.logPrefix) \(#function)")
     }
 }
 

@@ -60,6 +60,17 @@ extension ChatViewController { // Actions
     }
 
     static let settingsSegueIdentifier = "com.show.settings"
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+
+        switch segue.identifier {
+        case Self.settingsSegueIdentifier:
+            delegate?.viewInterfaceDidShowSettings(self)
+        default:
+            break
+        }
+    }
 }
 
 // MARK: -

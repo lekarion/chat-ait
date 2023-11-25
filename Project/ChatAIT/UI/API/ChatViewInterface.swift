@@ -23,6 +23,7 @@ protocol ChatViewInterface: AnyObject {
 /// The chat view delegate interface
 protocol ChatViewDelegate: AnyObject {
     func viewInterfaceDidRequestErase(_ viewInterface: ChatViewInterface)
+    func viewInterfaceDidShowSettings(_ viewInterface: ChatViewInterface)
 }
 /// The chat data provider interface
 protocol ChatViewModelInterface: AnyObject {
