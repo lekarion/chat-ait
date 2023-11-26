@@ -22,6 +22,9 @@ PODS:
     - DLAssistingSDK
     - DragonSDK
   - DragonSDK (1.0.1.6)
+  - Sourcery (2.1.1):
+    - Sourcery/CLI-Only (= 2.1.1)
+  - Sourcery/CLI-Only (2.1.1)
 
 DEPENDENCIES:
   - ChatLikeUI
@@ -29,6 +32,7 @@ DEPENDENCIES:
   - DecouplingLabSDK
   - DL8BallAssistant
   - DLDragonAssistant
+  - Sourcery
 
 SPEC REPOS:
   https://github.com/lekarion/products-pod-specs.git:
@@ -41,6 +45,7 @@ SPEC REPOS:
     - DragonSDK
   trunk:
     - CocoaLumberjack
+    - Sourcery
 
 SPEC CHECKSUMS:
   ChatLikeUI: 8e2adaea936048d27fceb62a9f11972bd02438d8
@@ -51,7 +56,8 @@ SPEC CHECKSUMS:
   DLCoreSDK: 275211b3606f59f0903312fedb2a798c76bdb636
   DLDragonAssistant: 8ec9390956be32f743f37f0d6ff2aad5fa016eb0
   DragonSDK: c6cef16a728d11ea505411d6ebd2bff98a5a0d56
+  Sourcery: 3a6e2e9bd439caeee302e8150dc712d2f8ef45b3
 
-PODFILE CHECKSUM: 60b749140c0ab0883348fa807e0d8cbb410cd240
+PODFILE CHECKSUM: debf57697e03818dbfc1fb77ae9e532e63981d60
 
 COCOAPODS: 1.14.3

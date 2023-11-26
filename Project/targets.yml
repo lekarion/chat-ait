@@ -18,6 +18,7 @@ configFiles:
   Debug: Configurations/Debug.xcconfig
   Release: Configurations/Release.xcconfig
 
+
 # templates
 targetTemplates:
   CommonTarget:
@@ -28,6 +29,19 @@ targetTemplates:
       GENERATE_INFOPLIST_FILE: YES
     sources:
       - "${target_name}"
+
+  CommonTargetTests:
+    type: bundle.unit-test
+    platform: iOS
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.olegyaros.${target_name}
+      PRODUCT_NAME: ${target_name}
+    preBuildScripts:
+      - script: "BASE_TARGET_NAME=`echo \"${target_name}\" | sed -e 's/Tests\\$//'`; \"${PODS_ROOT}/Sourcery/bin/sourcery\" --sources \"${SRCROOT}/$BASE_TARGET_NAME\" --templates \"${SRCROOT}/${target_name}/Sourcery/Template\" --output \"${SRCROOT}/${target_name}/Sourcery/Generated\""
+        name: Sourcery
+    sources:
+      - "${target_name}"
+
 
 schemeTemplates:
   CommonScheme:
@@ -45,10 +59,15 @@ schemeTemplates:
     archive:
       config: Release
 
+
 # targets & schemes
 targets:
   ChatAIT: 
     templates: [CommonTarget]
+  ChatAITTests:
+    templates: [CommonTargetTests]
+    dependencies:
+      - target: ChatAIT
 
 schemes:
   ChatAIT: 

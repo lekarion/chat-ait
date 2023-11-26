@@ -1,0 +1,123 @@
+import Foundation
+import Combine
+
+{{ argument.testimports }}
+#if os(iOS) || os(tvOS) || os(watchOS)
+import UIKit
+#elseif os(OSX)
+import AppKit
+#endif
+{# ----------------------SwiftifyMethodName ---------------------- #}
+{% macro swiftifyMethodName name %}{{ name | replace:"(","" | replace:")","" | replace:":","" | replace:"`","" | snakeToCamelCase | lowerFirstWord }}{% endmacro %}
+{# ----------------------MethodThrowableErrorDeclaration ---------------------- #}
+{% macro methodThrowableErrorDeclaration method %}
+    var {% call swiftifyMethodName method.selectorName %}ThrowableError: Swift.Error?
+{% endmacro %}
+{# ----------------------ConditionalAppendToCalledMethods ---------------------- #}
+{% macro conditionalAppendToCalledMethods method %}
+    {% if method.isInitializer %}
+    calledMethods.append(.`{% call swiftifyMethodName method.selectorName %}`{% if method.parameters.count > 0 %}({%for parameter in method.parameters %}{{ parameter.name }}: {{ parameter.name }}{% if not forloop.last %}, {% endif %}{% endfor %}){% endif %})
+    {% else %}
+        {% call normalAppendToCalledMethods method %}
+    {% endif %}
+{% endmacro %}
+{# ----------------------NormalAppendToCalledMethods ---------------------- #}
+{% macro normalAppendToCalledMethods method %}
+    calledMethods.append(.{% call swiftifyMethodName method.selectorName %}{% if method.parameters.count > 0 %}({%for parameter in method.parameters %}{{ parameter.name }}: {{ parameter.name }}{% if not forloop.last %}, {% endif %}{% endfor %}){% endif %})
+{% endmacro %}
+{# ----------------------CaseNameForMethod ---------------------- #}
+{% macro caseNameForMethod method %}{% call swiftifyMethodName method.selectorName %}{% if method.parameters.count > 0 %}({% for parameter in method.parameters %}{{ parameter.name }}: {{ parameter.typeName|replace:"@escaping","" }}{% if not forloop.last %}, {% endif %}{% endfor %}) {% endif %}
+{% endmacro %}
+{# ----------------------MethodThrowableErrorUsage ---------------------- #}
+{% macro methodThrowableErrorUsage method %}
+    if let error = {% call swiftifyMethodName method.selectorName %}ThrowableError {
+        throw error
+    }
+{% endmacro %}
+{# ----------------------MethodClosureName ---------------------- #}
+{% macro methodClosureName method %}{% call swiftifyMethodName method.selectorName %}{% if method.parameters.count > 0 %}{% for parameter in method.parameters %}{{ parameter.name | upperFirstLetter}}{% endfor %}{% endif %}Closure{% endmacro %}
+{# ----------------------MethodClosureDeclaration ---------------------- #}
+{% macro methodClosureDeclaration method %}
+    var {% call methodClosureName method %}: (({% for param in method.parameters %}{{ param.typeName }}{% if not forloop.last %}, {% endif %}{% endfor %}) {% if method.throws %}throws {% endif %}-> {% if method.isInitializer %}Void{% else %}{{ method.returnTypeName }}{% endif %})?
+{% endmacro %}
+{# ----------------------MethodClosureCallParameters ---------------------- #}
+{% macro methodClosureCallParameters method %}{% for param in method.parameters %}{{ param.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endmacro %}
+{# ----------------------KeywordsName ---------------------- #}
+{% macro keywordsName name %}`{% call swiftifyMethodName method.selectorName %}`{% if method.parameters.count > 0 %}({% for parameter in method.parameters %}{{ parameter.name }}: {{ parameter.typeName|replace:"@escaping","" }}{% if not forloop.last %}, {% endif %}{% endfor %}) {% endif %}{% endmacro %}
+{# ----------------------MockMethod ---------------------- #}
+{% macro mockMethod method %}
+
+    // MARK: - {{ method.shortName }}
+{% if method.throws %}{% call methodThrowableErrorDeclaration method %}
+{% endif %}
+{% if not method.returnTypeName.isVoid and not method.isInitializer %}
+var {% call swiftifyMethodName method.selectorName %}ReturnValue: {{ method.returnTypeName }}{% if not method.isOptionalReturnType %}!{% endif %}
+{% endif %}
+{% call methodClosureDeclaration method %}
+
+{% if method.isInitializer %}
+required {{ method.name }} {
+    {% call conditionalAppendToCalledMethods method %}
+    {% call methodClosureName method %}?({% call methodClosureCallParameters method %})}
+{% else %}
+    func {{ method.name }}{% if method.throws %} throws{% endif %}{% if not method.returnTypeName.isVoid %} -> {{ method.returnTypeName }}{% endif %} {
+        {% if method.throws %}
+            {% call methodThrowableErrorUsage method %}
+        {% endif %}
+            {% call conditionalAppendToCalledMethods method %}
+        {% if method.returnTypeName.isVoid %}
+        {% if method.throws %}try {% endif %}{% call methodClosureName method %}?({% call methodClosureCallParameters method %})
+        {% else %}
+            return {% if method.throws %}try {% endif %}{% call methodClosureName method %}.map({ {% if method.throws %}try {% endif %}$0({% call methodClosureCallParameters method %}) }) ?? {% call swiftifyMethodName method.selectorName %}ReturnValue
+        {% endif %}
+    }
+{% endif %}
+{% endmacro %}
+{# ----------------------MockOptionalVariable ---------------------- #}
+{% macro mockOptionalVariable variable %}
+    var {% call mockedVariableName variable %}: {{ variable.typeName }}
+{% endmacro %}
+{# ----------------------MockNonOptionalArrayOrDictionaryVariable ---------------------- #}
+{% macro mockNonOptionalArrayOrDictionaryVariable variable %}
+    var {% call mockedVariableName variable %}: {{ variable.typeName }} = {% if variable.isArray %}[]{% elif variable.isDictionary %}[:]{% endif %}
+{% endmacro %}
+{# ----------------------MockNonOptionalVariable ---------------------- #}
+{% macro mockNonOptionalVariable variable %}
+    var {% call mockedVariableName variable %}: {{ variable.typeName }} {
+        get { return {% call underlyingMockedVariableName variable %} }
+        set(value) { {% call underlyingMockedVariableName variable %} = value }
+    }
+    var {% call underlyingMockedVariableName variable %}: {{ variable.typeName }}!
+{% endmacro %}
+{# ----------------------UnderlyingMockedVariableName ---------------------- #}
+{% macro underlyingMockedVariableName variable %}underlying{{ variable.name|upperFirstLetter }}{% endmacro %}
+{% macro mockedVariableName variable %}{{ variable.name }}{% endmacro %}
+{# ----------------------UnderlyingMockedVariableName ---------------------- #}
+{% for type in types.protocols where type|annotated:"AutoMockable" %}{% if type|!annotated:"skipMocking" %}
+class Mock{{ type.name }}: {% if type.variable.annotations.namespace %}{{ type.variable.annotations.namespace }}.{% endif %}{{ type.name }} {
+{% if type.allMethods|!definedInExtension|count > 0 %}
+    enum MethodHandler {
+    {% for method in type.allMethods|!definedInExtension %}
+        {% if method.isInitializer %}
+            case {% call keywordsName method.selectorName %}
+        {% else %}
+            case {% call caseNameForMethod method %}
+        {% endif %}
+        {% endfor %}
+    }
+    
+    private(set) var calledMethods: [MethodHandler] = []
+    
+    /// Used to clear all stored called methods
+    func resetCalledMethods() {
+        calledMethods = []
+    }
+{% endif %}
+{% for variable in type.allVariables|!definedInExtension %}
+    {% if variable.isOptional %}{% call mockOptionalVariable variable %}{% elif variable.isArray or variable.isDictionary %}{% call mockNonOptionalArrayOrDictionaryVariable variable %}{% else %}{% call mockNonOptionalVariable variable %}{% endif %}
+{% endfor %}
+{% for method in type.allMethods|!definedInExtension %}
+    {% call mockMethod method %}
+{% endfor %}
+}
+{% endif %}{% endfor %}

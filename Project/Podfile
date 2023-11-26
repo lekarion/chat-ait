@@ -3,14 +3,23 @@ platform :ios, '14.0'
 source 'https://github.com/lekarion/products-pod-specs.git'
 source 'https://cdn.cocoapods.org/'
 
-target 'ChatAIT' do
+def basic_pods
   use_frameworks!
   
-   pod 'CocoaLumberjack/Swift'
+  pod 'CocoaLumberjack/Swift'
 
-   pod 'ChatLikeUI'
-#   pod 'ChatLikeUI-iOS', { :path => '../../chat-like-ui' } # Uncomment to use dev pod
-   pod 'DecouplingLabSDK'
-   pod 'DL8BallAssistant'
-   pod 'DLDragonAssistant'
+  pod 'ChatLikeUI'
+#  pod 'ChatLikeUI-iOS', { :path => '../../chat-like-ui' } # Uncomment to use dev pod
+  pod 'DecouplingLabSDK'
+  pod 'DL8BallAssistant'
+  pod 'DLDragonAssistant'
+end
+
+target 'ChatAIT' do
+  basic_pods
+end
+
+target 'ChatAITTests' do
+  basic_pods
+  pod 'Sourcery'
 end
