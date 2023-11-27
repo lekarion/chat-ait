@@ -1,0 +1,36 @@
+{
+  "configurations" : [
+    {
+      "id" : "913AAB18-00DD-4209-A1E3-B043F64EC8FA",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:ChatAIT.xcodeproj",
+      "identifier" : "4592ADD70ACC7DA4C39909CE",
+      "name" : "ChatAIT"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:ChatAIT.xcodeproj",
+        "identifier" : "32B50754D5460607187F9DA7",
+        "name" : "ChatAITTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:ChatAIT.xcodeproj",
+        "identifier" : "8B240CCD2B1533B000C465F8",
+        "name" : "ChatAITUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
