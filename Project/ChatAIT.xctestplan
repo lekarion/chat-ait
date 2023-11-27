@@ -27,7 +27,7 @@
     {
       "target" : {
         "containerPath" : "container:ChatAIT.xcodeproj",
-        "identifier" : "8B240CCD2B1533B000C465F8",
+        "identifier" : "140AFB29DE5B78C760A68EE3",
         "name" : "ChatAITUITests"
       }
     }
