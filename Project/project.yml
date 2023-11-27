@@ -11,3 +11,9 @@ fileGroups:
     - targets.yml
     - project.yml
     - Configurations
+
+targetTemplates:
+    CommonTargetTestsBase:
+        preBuildScripts:
+            - script: "BASE_TARGET_NAME=`echo \"${target_name}\" | sed -e 's/Tests\\$//'`; \"${PODS_ROOT}/Sourcery/bin/sourcery\" --sources \"${SRCROOT}/$BASE_TARGET_NAME\" --templates \"${SRCROOT}/${target_name}/Sourcery/Template\" --output \"${SRCROOT}/${target_name}/Sourcery/Generated\""
+              name: Generate Mocks
