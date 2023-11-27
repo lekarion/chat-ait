@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+@testable import ChatAIT
 
 {{ argument.testimports }}
 #if os(iOS) || os(tvOS) || os(watchOS)

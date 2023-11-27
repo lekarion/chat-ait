@@ -2,6 +2,7 @@
 // DO NOT EDIT
 import Foundation
 import Combine
+@testable import ChatAIT
 
 #if os(iOS) || os(tvOS) || os(watchOS)
 import UIKit
