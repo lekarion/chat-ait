@@ -76,6 +76,8 @@ class AppModelTests: XCTestCase {
         XCTAssertEqual(model.state, .idle)
 
         wait(for: [currentExpectation!], timeout: 5.0)
+        currentExpectation = nil
+
         XCTAssertNotNil(nextCommand)
         XCTAssertEqual(model.state, .idle)
 
@@ -91,6 +93,8 @@ class AppModelTests: XCTestCase {
         step!.1("")
 
         wait(for: [currentExpectation!], timeout: 5.0)
+        currentExpectation = nil
+
         XCTAssertNotNil(nextCommand)
         XCTAssertEqual(model.state, .assisting)
         XCTAssertEqual(model.currentAssistantId, AssistantsFactory.magic8BallConversationId)
@@ -106,6 +110,8 @@ class AppModelTests: XCTestCase {
         step!.1("")
 
         wait(for: [currentExpectation!], timeout: 5.0)
+        currentExpectation = nil
+
         XCTAssertNotNil(nextCommand)
         XCTAssertEqual(model.state, .assisting)
 
@@ -120,6 +126,8 @@ class AppModelTests: XCTestCase {
         step!.1("")
 
         wait(for: [currentExpectation!], timeout: 5.0)
+        currentExpectation = nil
+
         XCTAssertNotNil(nextCommand)
         XCTAssertEqual(model.state, .assisting)
 
@@ -134,6 +142,8 @@ class AppModelTests: XCTestCase {
         step!.1("")
 
         wait(for: [currentExpectation!], timeout: 5.0)
+        currentExpectation = nil
+
         XCTAssertNotNil(nextCommand)
         XCTAssertEqual(model.state, .assisting)
 
@@ -148,6 +158,8 @@ class AppModelTests: XCTestCase {
         step!.1("")
 
         wait(for: [currentExpectation!], timeout: 5.0)
+        currentExpectation = nil
+
         XCTAssertNotNil(nextCommand)
         XCTAssertEqual(model.state, .idle)
 
@@ -180,7 +192,7 @@ extension AppModelTests { // 8Ball final state machine
                 XCTAssertNotNil(data)
 
                 step = .start
-                return (step, nothing)
+                return (step, { _ in print("\(#function) - preStart: text: \(data?.text ?? "nil"), imageInfo: \(data?.imageInfo ?? "nil")") })
             case .start:
                 let union = command as? AppModelTestCommandUnion
                 XCTAssertNotNil(union)
@@ -196,7 +208,7 @@ extension AppModelTests { // 8Ball final state machine
                 XCTAssertNotNil(data)
 
                 step = .next
-                return (step, nothing)
+                return (step, { _ in print("\(#function) - ask: text: \(data?.text ?? "nil"), imageInfo: \(data?.imageInfo ?? "nil")") })
             case .next:
                 let union = command as? AppModelTestCommandUnion
                 XCTAssertNotNil(union)
@@ -211,9 +223,6 @@ extension AppModelTests { // 8Ball final state machine
                 XCTAssertTrue(false, "Should not be called")
                 return nil
             }
-        }
-
-        private func nothing(_ id: String) {
         }
 
         enum Step {
