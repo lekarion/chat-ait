@@ -24,6 +24,7 @@ class ChatModel {
         }
     }
 
+    var currentAssistantId: String? { assistantId }
     var currentAssistantIcon: UIImage? { assistantIcon }
 
     // MARK: ### Private ###
